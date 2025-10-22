@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<MultidimensionalDesign class="oracle.dbtools.crest.model.design.multidimensional.MultidimensionalDesign" name="Multidimensional_1" id="29054437-3B7D-B404-4DD4-72A83A4E6231" mainViewID="A35A506A-1A34-F341-FC09-26CEA0207B61" boundModel="AB96CF23-8C76-6FBE-F19A-60FEA8D67C3B">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 08:01:06 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+</MultidimensionalDesign>

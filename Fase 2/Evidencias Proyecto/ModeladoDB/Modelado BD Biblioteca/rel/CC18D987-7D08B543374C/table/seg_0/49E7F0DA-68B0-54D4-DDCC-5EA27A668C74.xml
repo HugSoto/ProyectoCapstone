@@ -1,0 +1,76 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="49E7F0DA-68B0-54D4-DDCC-5EA27A668C74" name="MATERIALES_CATEGORIAS">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 15:44:05 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<ordsAlias>relation_11</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="MATERIALES_id_material" id="B827D6A3-D670-6B44-A53C-C2DF6DDACDE2">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 15:44:05 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="FC478FD1-A4EB-641A-AA83-68C85AB41430" referredColumn="75A4791E-B5C7-C0A8-89E5-95B103E296A6"/>
+</associations>
+</Column>
+<Column name="CATEGORIAS_id_categoria" id="955BEA85-4628-FA8D-972A-E5A8E81E3430">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 15:44:05 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="A2EFBD91-B10C-EB86-870E-5CFA808829E9" referredColumn="910E91DF-701A-9AB5-162A-E694B5C5EE1F"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="E42A6BEF-2B18-6522-AA59-F2C20E8F421D" name="Relation_11_PK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 15:44:05 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="B827D6A3-D670-6B44-A53C-C2DF6DDACDE2"/>
+<colUsage columnID="955BEA85-4628-FA8D-972A-E5A8E81E3430"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="6D56D58F-CACF-BAE6-1F13-0D273858C237" name="Relation_11_MATERIALES_FK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 15:44:05 UTC</createdTime>
+<generatorID>E5C1040B-D01B-B556-39C4-1CD3A8F7D299</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="B827D6A3-D670-6B44-A53C-C2DF6DDACDE2"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="EA60D8E2-D52E-C0E5-D2FE-006AAD08ADFC" name="Relation_11_CATEGORIAS_FK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 15:44:05 UTC</createdTime>
+<generatorID>E5C1040B-D01B-B556-39C4-1CD3A8F7D299</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="955BEA85-4628-FA8D-972A-E5A8E81E3430"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

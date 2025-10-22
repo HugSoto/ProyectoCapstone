@@ -1,0 +1,49 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="C315EFF3-2690-1C05-8C20-395FF301508B" name="EDITORIAL">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-09 00:32:38 UTC</createdTime>
+<generatorID>743096B6-5AFA-74DE-D665-25FE31DAEF35</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_editorial" id="2C824AFA-633C-D20F-D181-2CDBAE41B14C">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-09 00:32:38 UTC</createdTime>
+<generatorID>36D82215-AD1B-CAA1-B167-317E6E56CC39</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="nombre_editorial" id="269D7B45-B490-C472-E3D9-36DBDBCFF639">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-09 00:32:38 UTC</createdTime>
+<generatorID>21D2CC4F-850A-CB19-8974-B417C46DA072</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>150</dataTypeSize>
+<ownDataTypeParameters>150,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="2CBC18FF-574A-CA79-EC9C-7694C2E0A511" name="EDITORIAL_PK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-09 00:32:38 UTC</createdTime>
+<generatorID>D0AE0653-5236-FD48-2692-670B84FFE5F4</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="2C824AFA-633C-D20F-D181-2CDBAE41B14C"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,97 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="5CE13CEA-FA72-FB02-C7C5-FE18D930F832" name="USUARIOS">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>81B1EA4E-C737-C354-BCAA-8A28644A11B0</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<ordsAlias>usuariosv1</ordsAlias>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id_usuario" id="CDB3F7B6-F71D-4FE5-D04B-5F376FA0B8AC">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>1016386F-3EF1-D883-8205-93065BE77B1D</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="nombre" id="6061E43C-E8DB-0069-41A2-AA9AB65F7F01">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>2DB72CEC-84DC-A02D-2324-64766D7B2C95</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>120 CHAR</dataTypeSize>
+<ownDataTypeParameters>120 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="rut" id="1E91588C-10A9-DBE2-5B71-202CCC3A9878">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>9E4833E3-4EA0-5F2C-0046-728E39F25966</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>15 CHAR</dataTypeSize>
+<ownDataTypeParameters>15 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="correo" id="112A8A1A-E8B9-382B-4C4D-AFA3F1385683">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>42989796-9F08-C065-E1A9-040829B0EBA9</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>60 CHAR</dataTypeSize>
+<ownDataTypeParameters>60 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="telefono" id="35E35345-3AE4-CD98-00BE-F12EA2E49B4C">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>B06F5693-857F-512F-1920-79E4F2E432C4</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="rol" id="667D5D81-7226-9DA4-A894-ACE8877B3919">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>4EEEAD68-5118-7260-0A78-1586DCC817BE</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>25 CHAR</dataTypeSize>
+<ownDataTypeParameters>25 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="68B2190A-4EA8-892D-F072-544C292853A3" name="USUARIOS_PK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 04:29:59 UTC</createdTime>
+<generatorID>A3613AE5-934F-E7F5-B48E-628800426678</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="CDB3F7B6-F71D-4FE5-D04B-5F376FA0B8AC"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

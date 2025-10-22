@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogación de Material - Sistema de Biblioteca</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .message { padding: 10px; margin-top: 20px; border-radius: 4px; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Módulo 1: Catalogación de Material 📚</h1>
+    <p>Ingreso de un nuevo material bibliográfico al sistema.</p>
+    
+    <form id="catalogacionForm">
+        <label for="titulo">Título del Material:</label>
+        <input type="text" id="titulo" name="titulo" required>
+
+        <label for="isbn">ISBN (Código Único):</label>
+        <input type="text" id="isbn" name="isbn" placeholder="Ej: 978-0000000000" required>
+
+        <label for="anio">Año de Publicación:</label>
+        <input type="number" id="anio" name="anio" min="1000" max="2099" required>
+
+        <label for="ejemplares">Total de Ejemplares (Stock):</label>
+        <input type="number" id="ejemplares" name="ejemplares" min="1" required value="1">
+
+        <label for="autor">Autor:</label>
+        <select id="autor" name="autor_id" required>
+            <option value="">Cargando Autores...</option>
+        </select>
+
+        <label for="editorial">Editorial:</label>
+        <select id="editorial" name="editorial_id" required>
+            <option value="">Cargando Editoriales...</option>
+        </select>
+
+        <label for="categoria">Categoría:</label>
+        <select id="categoria" name="categoria_id" required>
+            <option value="">Cargando Categorías...</option>
+        </select>
+        
+        <button type="submit">Guardar Material</button>
+    </form>
+
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+    // ******************************************************
+    // LÓGICA JAVASCRIPT: CONSUMO DE API Y ENVÍO DE FORMULARIO
+    // ******************************************************
+
+    // URL base de tu API Flask
+    const API_URL = '/api/listas_catalogacion';
+
+    // Función para obtener los datos de la API y llenar los selectores
+    async function cargarListasApoyo() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const data = await response.json();
+
+            // 1. Llenar Autores
+            const selectAutor = document.getElementById('autor');
+            selectAutor.innerHTML = '<option value="">-- Seleccione un Autor --</option>';
+            data.autores.forEach(autor => {
+                const option = document.createElement('option');
+                option.value = autor.id_autor;
+                option.textContent = autor.nombre_autor;
+                selectAutor.appendChild(option);
+            });
+
+            // 2. Llenar Editoriales
+            const selectEditorial = document.getElementById('editorial');
+            selectEditorial.innerHTML = '<option value="">-- Seleccione una Editorial --</option>';
+            data.editoriales.forEach(editorial => {
+                const option = document.createElement('option');
+                option.value = editorial.id_editorial;
+                option.textContent = editorial.nombre_editorial;
+                selectEditorial.appendChild(option);
+            });
+
+            // 3. Llenar Categorías
+            const selectCategoria = document.getElementById('categoria');
+            selectCategoria.innerHTML = '<option value="">-- Seleccione una Categoría --</option>';
+            data.categorias.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria.id_categoria;
+                option.textContent = categoria.nombre_categoria;
+                selectCategoria.appendChild(option);
+            });
+
+        } catch (error) {
+            console.error("Error al cargar las listas de apoyo:", error);
+            mostrarMensaje('error', 'Error al cargar Autores, Editoriales o Categorías. Verifique el servidor Flask y la conexión a MySQL.');
+        }
+    }
+
+    // Función para manejar el envío del formulario
+    document.getElementById('catalogacionForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Evita el envío tradicional del formulario
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        // La inserción real de los datos en la BD se realizará a través de esta URL
+        // (Debemos crear esta ruta en el app.py en el siguiente paso)
+        const INSERT_URL = '/api/catalogacion/guardar'; 
+        
+        try {
+            const response = await fetch(INSERT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            const messageDiv = document.getElementById('message');
+
+            if (response.ok) {
+                mostrarMensaje('success', result.message || 'Material catalogado con éxito!');
+                this.reset(); // Limpiar formulario
+                cargarListasApoyo(); // Recargar listas por si se agregaron nuevos autores/editoriales
+            } else {
+                mostrarMensaje('error', result.error || 'Error desconocido al catalogar.');
+            }
+
+        } catch (error) {
+            console.error("Error en el envío del formulario:", error);
+            mostrarMensaje('error', 'Error de conexión con el servidor. Verifique Flask.');
+        }
+    });
+
+    // Función auxiliar para mostrar mensajes al usuario
+    function mostrarMensaje(type, text) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.className = `message ${type}`;
+        messageDiv.textContent = text;
+        messageDiv.style.display = 'block';
+    }
+
+    // Iniciar la carga de datos al cargar la página
+    window.onload = cargarListasApoyo;
+</script>
+
+</body>
+</html>

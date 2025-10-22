@@ -1,0 +1,109 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="81B1EA4E-C737-C354-BCAA-8A28644A11B0" name="USUARIOS">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:46:28 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id_usuario" id="1016386F-3EF1-D883-8205-93065BE77B1D">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:46:47 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="nombre" id="2DB72CEC-84DC-A02D-2324-64766D7B2C95">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:47:04 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>120 CHAR</dataTypeSize>
+<ownDataTypeParameters>120 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="rut" id="9E4833E3-4EA0-5F2C-0046-728E39F25966">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:47:18 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>15 CHAR</dataTypeSize>
+<ownDataTypeParameters>15 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="correo" id="42989796-9F08-C065-E1A9-040829B0EBA9">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:47:41 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>60 CHAR</dataTypeSize>
+<ownDataTypeParameters>60 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="telefono" id="B06F5693-857F-512F-1920-79E4F2E432C4">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:48:00 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="rol" id="4EEEAD68-5118-7260-0A78-1586DCC817BE">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:48:21 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>25 CHAR</dataTypeSize>
+<ownDataTypeParameters>25 CHAR,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="A3613AE5-934F-E7F5-B48E-628800426678" name="Usuarios PK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:47:02 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>1016386F-3EF1-D883-8205-93065BE77B1D</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

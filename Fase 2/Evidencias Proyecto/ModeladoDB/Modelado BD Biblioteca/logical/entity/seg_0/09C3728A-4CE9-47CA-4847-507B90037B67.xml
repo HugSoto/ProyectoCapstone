@@ -1,0 +1,149 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="09C3728A-4CE9-47CA-4847-507B90037B67" name="MATERIALES">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:51:20 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id_material" id="1037D0FF-19BB-9311-45F5-E66A78CCEDA1">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:51:33 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="titulo" id="3DCEA623-9616-D5F3-C521-BD2AC05F195C">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:51:44 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100 CHAR</dataTypeSize>
+<ownDataTypeParameters>100 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="anio_publicacion" id="5F5DC847-C07A-04A9-D2DB-F5CDF36579AE">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:52:36 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="tipo" id="AAC505EC-E782-A957-EFB5-ED2E674400BD">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:52:47 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>50 CHAR</dataTypeSize>
+<ownDataTypeParameters>50 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="disponible" id="43F41C93-3F99-AC8E-590B-F159B06D742C">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:54:48 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<dataTypeSize>1</dataTypeSize>
+<ownDataTypeParameters>1,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_editorial" id="BC96CD1D-8839-23FE-9D80-22E22FADC5DC">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-09 00:31:39 UTC</createdTime>
+<generatorID>75D50118-E29B-2535-9C9B-A711615B79D2</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<referedAttribute>36D82215-AD1B-CAA1-B167-317E6E56CC39</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="id_autor1" id="B403FCD2-F5FD-CCD6-8E45-4132ED508B06">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-09 00:32:11 UTC</createdTime>
+<generatorID>575131E1-F25A-7991-F4F4-5DC34D79162B</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<referedAttribute>D1A89F0E-866A-CFB2-0DB2-1F0705F98C31</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ejemplares_totales" id="0699F336-8B98-35FA-34D3-D57F1F5894AE">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 16:25:29 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ejemplares_disponibles" id="AA8D3C65-9B1E-C63F-44A8-AA68450E91F2">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-22 16:26:25 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="00D5F2C9-8FA8-B933-8D6F-BC1638E7D39D" name="MATERIALES PK">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-09-13 03:51:43 UTC</createdTime>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<shouldEngineer>false</shouldEngineer>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="false"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>1037D0FF-19BB-9311-45F5-E66A78CCEDA1</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>
