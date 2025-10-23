@@ -15,7 +15,7 @@
 <minVolumes>0</minVolumes>
 <normalForm>Third</normalForm>
 <attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
-<Attribute name="id_categoria" id="0A163E8B-E39B-DF2E-F9C6-D77536C2A6A7">
+<Attribute name="id categoria" id="0A163E8B-E39B-DF2E-F9C6-D77536C2A6A7">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 04:21:22 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -27,7 +27,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="nombre_categoria" id="BBE8F246-C498-8BF2-4065-3ECDEB5066A1">
+<Attribute name="nombre categoria" id="BBE8F246-C498-8BF2-4065-3ECDEB5066A1">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 04:21:33 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>

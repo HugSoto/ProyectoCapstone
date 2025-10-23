@@ -15,7 +15,7 @@
 <minVolumes>0</minVolumes>
 <normalForm>Third</normalForm>
 <attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
-<Attribute name="id_rol" id="8FF090F8-D43E-195F-5BE4-5B8710221CAD">
+<Attribute name="id rol" id="8FF090F8-D43E-195F-5BE4-5B8710221CAD">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 03:58:05 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -27,7 +27,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="nombre_rol" id="B70010A9-041B-EEC1-6C40-CCCA16482A7D">
+<Attribute name="nombre rol" id="B70010A9-041B-EEC1-6C40-CCCA16482A7D">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 03:58:20 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -52,7 +52,7 @@
 <logicalDatatype>LOGDT040</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="id_usuario" id="6E3EBFAF-D1FA-7B69-4463-A7381145AD23">
+<Attribute name="id usuario" id="6E3EBFAF-D1FA-7B69-4463-A7381145AD23">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 04:29:12 UTC</createdTime>
 <generatorID>C0465BE1-EAB3-CFDC-8A0F-1879F3997E6C</generatorID>

@@ -6,15 +6,20 @@
     <title>Catalogación de Material - Sistema de Biblioteca</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 30px; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; }
         input[type="text"], input[type="number"], select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-right: 10px;}
         button:hover { background-color: #0056b3; }
         .message { padding: 10px; margin-top: 20px; border-radius: 4px; display: none; }
         .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        /* Estilos para la tabla de listado */
+        #listaMaterialesTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #listaMaterialesTable th, #listaMaterialesTable td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
+        #listaMaterialesTable th { background-color: #007bff; color: white; }
     </style>
 </head>
 <body>
@@ -23,6 +28,7 @@
     <h1>Módulo 1: Catalogación de Material 📚</h1>
     <p>Ingreso de un nuevo material bibliográfico al sistema.</p>
     
+    <h2>1. Registro de Nuevo Material</h2>
     <form id="catalogacionForm">
         <label for="titulo">Título del Material:</label>
         <input type="text" id="titulo" name="titulo" required>
@@ -55,20 +61,51 @@
     </form>
 
     <div id="message" class="message"></div>
+
+    <h2 id="lista-titulo">2. Inventario General de Materiales</h2>
+    <p id="loading-list">Cargando inventario...</p>
+    
+    <table id="listaMaterialesTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Editorial</th>
+                <th>ISBN</th>
+                <th>Total</th>
+                <th>Disponible</th>
+                <th>Acciones</th> </tr>
+        </thead>
+        <tbody id="materialesBody">
+            </tbody>
+    </table>
+
 </div>
 
 <script>
     // ******************************************************
-    // LÓGICA JAVASCRIPT: CONSUMO DE API Y ENVÍO DE FORMULARIO
+    // LÓGICA JAVASCRIPT: CONSUMO DE API Y RENDERIZACIÓN
     // ******************************************************
 
-    // URL base de tu API Flask
-    const API_URL = '/api/listas_catalogacion';
+    // URLs de la API Flask
+    const API_LISTAS = '/api/listas_catalogacion';
+    const API_GUARDAR = '/api/catalogacion/guardar'; 
+    const API_LISTAR = '/api/catalogacion/listar'; // NUEVA API DE LECTURA
 
-    // Función para obtener los datos de la API y llenar los selectores
+    // ------------------------------------------------------------------
+    // FUNCIÓN DE CARGA INICIAL (LISTAS DE APOYO Y LISTADO DE MATERIALES)
+    // ------------------------------------------------------------------
+    async function cargarDatosIniciales() {
+        await cargarListasApoyo();
+        await listarMateriales(); // Llamada a la nueva función
+    }
+
+    // Función para obtener los datos de la API y llenar los selectores (HU-CAT01)
     async function cargarListasApoyo() {
+        // ... (Tu código actual para cargar listas) ...
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(API_LISTAS);
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status}`);
             }
@@ -106,23 +143,69 @@
 
         } catch (error) {
             console.error("Error al cargar las listas de apoyo:", error);
-            mostrarMensaje('error', 'Error al cargar Autores, Editoriales o Categorías. Verifique el servidor Flask y la conexión a MySQL.');
+            mostrarMensaje('error', 'Error al cargar Autores, Editoriales o Categorías. Verifique el servidor Flask.');
         }
     }
 
-    // Función para manejar el envío del formulario
+    // ------------------------------------------------------------------
+    // NUEVA FUNCIÓN: LISTADO DE MATERIALES (READ) - HU-CAT03
+    // ------------------------------------------------------------------
+    async function listarMateriales() {
+        const materialesBody = document.getElementById('materialesBody');
+        const loadingList = document.getElementById('loading-list');
+        materialesBody.innerHTML = ''; // Limpiar la tabla
+
+        try {
+            const response = await fetch(API_LISTAR);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const materiales = await response.json();
+            
+            loadingList.style.display = 'none'; // Ocultar mensaje de carga
+
+            if (materiales.length === 0) {
+                materialesBody.innerHTML = '<tr><td colspan="8">No hay materiales catalogados. Utilice el formulario de arriba para agregar uno.</td></tr>';
+                return;
+            }
+
+            // Iterar y crear las filas de la tabla
+            materiales.forEach(material => {
+                const row = materialesBody.insertRow();
+                
+                // M.id_material, M.titulo, A.nombre_autor, E.nombre_editorial, M.isbn, M.ejemplares_totales, M.ejemplares_disponibles
+                row.insertCell(0).textContent = material.id_material;
+                row.insertCell(1).textContent = material.titulo;
+                row.insertCell(2).textContent = material.nombre_autor;
+                row.insertCell(3).textContent = material.nombre_editorial;
+                row.insertCell(4).textContent = material.isbn;
+                row.insertCell(5).textContent = material.ejemplares_totales;
+                row.insertCell(6).textContent = material.ejemplares_disponibles;
+
+                // Columna de Acciones (para Sprint 2)
+                const actionsCell = row.insertCell(7);
+                actionsCell.innerHTML = `<button onclick="iniciarEdicion(${material.id_material})" style="background-color: #ffc107;">Editar</button>`;
+                // NOTA: La función iniciarEdicion se implementará en el Sprint 2 (HU-CAT04)
+
+            });
+
+        } catch (error) {
+            console.error("Error al listar materiales:", error);
+            loadingList.textContent = 'Error: No se pudo cargar el inventario.';
+            loadingList.style.display = 'block';
+        }
+    }
+
+
+    // Función para manejar el envío del formulario (HU-CAT02)
     document.getElementById('catalogacionForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Evita el envío tradicional del formulario
+        event.preventDefault(); 
 
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
 
-        // La inserción real de los datos en la BD se realizará a través de esta URL
-        // (Debemos crear esta ruta en el app.py en el siguiente paso)
-        const INSERT_URL = '/api/catalogacion/guardar'; 
-        
         try {
-            const response = await fetch(INSERT_URL, {
+            const response = await fetch(API_GUARDAR, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -131,12 +214,11 @@
             });
 
             const result = await response.json();
-            const messageDiv = document.getElementById('message');
 
             if (response.ok) {
                 mostrarMensaje('success', result.message || 'Material catalogado con éxito!');
                 this.reset(); // Limpiar formulario
-                cargarListasApoyo(); // Recargar listas por si se agregaron nuevos autores/editoriales
+                await cargarDatosIniciales(); // Recargar listas Y el listado de materiales
             } else {
                 mostrarMensaje('error', result.error || 'Error desconocido al catalogar.');
             }
@@ -153,10 +235,15 @@
         messageDiv.className = `message ${type}`;
         messageDiv.textContent = text;
         messageDiv.style.display = 'block';
+        
+        // Ocultar mensaje después de 5 segundos
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
     }
 
     // Iniciar la carga de datos al cargar la página
-    window.onload = cargarListasApoyo;
+    window.onload = cargarDatosIniciales;
 </script>
 
 </body>

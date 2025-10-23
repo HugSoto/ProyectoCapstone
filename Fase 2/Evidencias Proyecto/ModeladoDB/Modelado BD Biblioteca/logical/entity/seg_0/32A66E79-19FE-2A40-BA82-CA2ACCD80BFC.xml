@@ -15,7 +15,7 @@
 <minVolumes>0</minVolumes>
 <normalForm>Third</normalForm>
 <attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
-<Attribute name="id_autor" id="D1A89F0E-866A-CFB2-0DB2-1F0705F98C31">
+<Attribute name="id autor" id="D1A89F0E-866A-CFB2-0DB2-1F0705F98C31">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-09 00:31:42 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -27,7 +27,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="nombre_autor" id="15F92D3E-D0B5-F5E3-93E1-9A63787639E3">
+<Attribute name="nombre autor" id="15F92D3E-D0B5-F5E3-93E1-9A63787639E3">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-09 00:32:00 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -46,8 +46,9 @@
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-09 00:31:49 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<shouldEngineer>false</shouldEngineer>
 <engineerTo>
-<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="false"/>
 </engineerTo>
 <pk>true</pk>
 <usedAttributes>

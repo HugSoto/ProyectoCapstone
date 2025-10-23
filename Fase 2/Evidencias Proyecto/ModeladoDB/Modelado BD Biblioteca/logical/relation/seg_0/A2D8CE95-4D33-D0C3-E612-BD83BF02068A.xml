@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="Relation_1" directorySegmentName="seg_0" id="A2D8CE95-4D33-D0C3-E612-BD83BF02068A">
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="PRESTAMOS USUARIOS FK" directorySegmentName="seg_0" id="A2D8CE95-4D33-D0C3-E612-BD83BF02068A">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 04:25:05 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>

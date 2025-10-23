@@ -15,7 +15,7 @@
 <minVolumes>0</minVolumes>
 <normalForm>Third</normalForm>
 <attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
-<Attribute name="id_material" id="1037D0FF-19BB-9311-45F5-E66A78CCEDA1">
+<Attribute name="id material" id="1037D0FF-19BB-9311-45F5-E66A78CCEDA1">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 03:51:33 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -40,7 +40,7 @@
 <dataTypeSize>100 CHAR</dataTypeSize>
 <ownDataTypeParameters>100 CHAR,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="anio_publicacion" id="5F5DC847-C07A-04A9-D2DB-F5CDF36579AE">
+<Attribute name="anio publicacion" id="5F5DC847-C07A-04A9-D2DB-F5CDF36579AE">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-09-13 03:52:36 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -78,7 +78,7 @@
 <dataTypeSize>1</dataTypeSize>
 <ownDataTypeParameters>1,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="id_editorial" id="BC96CD1D-8839-23FE-9D80-22E22FADC5DC">
+<Attribute name="EDITORIAL id editorial" id="BC96CD1D-8839-23FE-9D80-22E22FADC5DC">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-09 00:31:39 UTC</createdTime>
 <generatorID>75D50118-E29B-2535-9C9B-A711615B79D2</generatorID>
@@ -92,7 +92,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="id_autor1" id="B403FCD2-F5FD-CCD6-8E45-4132ED508B06">
+<Attribute name="AUTOR id autor" id="B403FCD2-F5FD-CCD6-8E45-4132ED508B06">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-09 00:32:11 UTC</createdTime>
 <generatorID>575131E1-F25A-7991-F4F4-5DC34D79162B</generatorID>
@@ -106,7 +106,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="ejemplares_totales" id="0699F336-8B98-35FA-34D3-D57F1F5894AE">
+<Attribute name="ejemplares totales" id="0699F336-8B98-35FA-34D3-D57F1F5894AE">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-22 16:25:29 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -118,7 +118,7 @@
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
 </Attribute>
-<Attribute name="ejemplares_disponibles" id="AA8D3C65-9B1E-C63F-44A8-AA68450E91F2">
+<Attribute name="ejemplares disponibles" id="AA8D3C65-9B1E-C63F-44A8-AA68450E91F2">
 <createdBy>hugo-</createdBy>
 <createdTime>2025-10-22 16:26:25 UTC</createdTime>
 <ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
@@ -129,6 +129,20 @@
 <use>1</use>
 <logicalDatatype>LOGDT019</logicalDatatype>
 <ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="isbn" id="C7CDBF08-D3D1-FA2B-7EDF-34C49F7324AA">
+<createdBy>hugo-</createdBy>
+<createdTime>2025-10-23 15:12:32 UTC</createdTime>
+<generatorID>83B56FEA-5B19-0F7A-0ED9-7F588B4EEBDC</generatorID>
+<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
+<engineerTo>
+<item key="CC18D987-0009-139A-A83F-7D08B543374C" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>20</dataTypeSize>
+<ownDataTypeParameters>20,,</ownDataTypeParameters>
 </Attribute>
 </attributes>
 <identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
