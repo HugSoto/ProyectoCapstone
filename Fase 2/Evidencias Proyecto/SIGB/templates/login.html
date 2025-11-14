@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIGB</title>
+    <style>
+        /* Estilos básicos */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Iniciar Sesión 🔒</h1>
+        <form id="loginForm">
+            <label for="rut">RUT:</label>
+            <input type="text" id="rut" name="rut" placeholder="Ingrese su RUT" required>
+
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" placeholder="Contraseña" required>
+            
+            <button type="submit">Acceder</button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+            const rut = document.getElementById('rut').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rut, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(`¡Bienvenido ${result.user}! Rol: ${result.rol}`);
+                    // Redirigir a la página principal después del login
+                    window.location.href = '/catalogacion'; 
+                } else {
+                    alert(result.error || 'Fallo en el inicio de sesión.');
+                }
+
+            } catch (error) {
+                console.error("Error de conexión:", error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes de Gestión - SIGB</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { color: #800080; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0; }
+        h2 { color: #333; margin-top: 40px; border-left: 5px solid #800080; padding-left: 10px; }
+        
+        /* Estilo para las secciones de reporte */
+        .reporte-section { margin-bottom: 50px; }
+        
+        /* Estilos de la tabla */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
+        th { background-color: #800080; color: white; }
+        .mora-high { background-color: #f8d7da; color: #721c24; font-weight: bold; } /* Resalta la mora */
+        
+        .loading-message { text-align: center; color: #555; margin-top: 20px; }
+        .error-message { text-align: center; color: red; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Panel de Reportes de Gestión 📊</h1>
+    <p>Estos reportes son clave para la toma de decisiones administrativa (adquisición) y operativa (cobro de morosidad).</p>
+
+    <div class="reporte-section">
+        <h2>1. Top 10 Materiales Más Prestados (Uso Histórico) 📈</h2>
+        <p>Identifica los materiales con mayor demanda histórica para futuras adquisiciones.</p>
+        <p id="loadingUso" class="loading-message">Cargando reporte de uso...</p>
+
+        <table id="reporteUsoTable">
+            <thead>
+                <tr>
+                    <th>Título del Material</th>
+                    <th>ISBN</th>
+                    <th>Autor</th>
+                    <th>Total Préstamos</th>
+                </tr>
+            </thead>
+            <tbody id="reporteUsoBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="reporte-section">
+        <h2>2. Reporte de Usuarios en Mora (Préstamos Vencidos) 🚨</h2>
+        <p>Muestra los préstamos 'Activos' cuya fecha de devolución ya pasó (mora).</p>
+        <p id="loadingMora" class="loading-message">Cargando reporte de mora...</p>
+        
+        <table id="reporteMoraTable">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>RUT</th>
+                    <th>Material en Mora</th>
+                    <th>Fecha Límite Esperada</th>
+                    <th>Días en Mora</th>
+                    <th>Multa Estimada ($500/día)</th>
+                </tr>
+            </thead>
+            <tbody id="reporteMoraBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const API_REPORTE_USO = '/api/admin/reportes/uso';
+    const API_REPORTE_MORA = '/api/admin/reportes/mora';
+    
+    // Función para formatear números como moneda (CLP simplificado)
+    function formatCurrency(amount) {
+        return '$' + amount.toLocaleString('es-CL');
+    }
+
+    // **********************************************************
+    // FUNCIÓN PARA CARGAR REPORTE DE USO (HU-ADMIN04)
+    // **********************************************************
+    async function cargarReporteUso() {
+        const body = document.getElementById('reporteUsoBody');
+        const loading = document.getElementById('loadingUso');
+        body.innerHTML = '';
+        loading.textContent = 'Cargando reporte de uso...';
+
+        try {
+            const response = await fetch(API_REPORTE_USO);
+            
+            if (!response.ok) {
+                if (response.status === 403) {
+                    loading.className = 'error-message';
+                    loading.textContent = '🚫 Acceso Denegado. Se requiere ser Bibliotecario o Admin.';
+                } else {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return;
+            }
+            
+            const reporte = await response.json();
+            loading.style.display = 'none';
+
+            if (reporte.length === 0) {
+                body.innerHTML = '<tr><td colspan="4">No hay datos suficientes para generar el Top 10.</td></tr>';
+                return;
+            }
+
+            reporte.forEach(item => {
+                const row = body.insertRow();
+                row.insertCell(0).textContent = item.titulo_material;
+                row.insertCell(1).textContent = item.isbn;
+                row.insertCell(2).textContent = item.nombre_autor;
+                row.insertCell(3).textContent = item.total_prestamos_historico;
+            });
+
+        } catch (error) {
+            console.error("Error al cargar Reporte de Uso:", error);
+            loading.className = 'error-message';
+            loading.textContent = 'Error: No se pudo cargar el reporte de uso.';
+        }
+    }
+
+    // **********************************************************
+    // FUNCIÓN PARA CARGAR REPORTE DE MORA (HU-ADMIN05)
+    // **********************************************************
+    async function cargarReporteMora() {
+        const body = document.getElementById('reporteMoraBody');
+        const loading = document.getElementById('loadingMora');
+        body.innerHTML = '';
+        loading.textContent = 'Cargando reporte de mora...';
+
+        try {
+            const response = await fetch(API_REPORTE_MORA);
+            
+            if (!response.ok) {
+                 if (response.status === 403) {
+                    loading.className = 'error-message';
+                    loading.textContent = '🚫 Acceso Denegado. Se requiere ser Bibliotecario o Admin.';
+                } else {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return;
+            }
+            
+            const reporte = await response.json();
+            loading.style.display = 'none';
+
+            if (reporte.length === 0) {
+                body.innerHTML = '<tr><td colspan="6">🎉 ¡Felicitaciones! No hay préstamos en mora actualmente.</td></tr>';
+                return;
+            }
+
+            reporte.forEach(item => {
+                const row = body.insertRow();
+                
+                // Resaltar filas con mora alta (ej: > 10 días)
+                if (item.dias_mora > 10) { 
+                    row.classList.add('mora-high'); 
+                }
+
+                row.insertCell(0).textContent = item.nombre_usuario;
+                row.insertCell(1).textContent = item.rut;
+                row.insertCell(2).textContent = item.titulo_material;
+                row.insertCell(3).textContent = item.fecha_esperada;
+                row.insertCell(4).textContent = item.dias_mora;
+                row.insertCell(5).textContent = formatCurrency(item.multa_estimada);
+            });
+
+        } catch (error) {
+            console.error("Error al cargar Reporte de Mora:", error);
+            loading.className = 'error-message';
+            loading.textContent = 'Error: No se pudo cargar el reporte de mora.';
+        }
+    }
+
+    window.onload = function() {
+        cargarReporteUso();
+        cargarReporteMora();
+    };
+</script>
+
+</body>
+</html>

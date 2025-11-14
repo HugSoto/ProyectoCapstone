@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo en Línea (OPAC) - DGAC</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #e9ecef; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #004d99; border-bottom: 3px solid #007bff; padding-bottom: 10px; margin-bottom: 20px; }
+        .search-controls { display: flex; gap: 15px; margin-bottom: 30px; }
+        .search-controls input, .search-controls select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex-grow: 1; }
+        #resultadosTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #resultadosTable th, #resultadosTable td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
+        #resultadosTable th { background-color: #007bff; color: white; cursor: pointer; }
+        .disponible { color: green; font-weight: bold; }
+        .prestado { color: red; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Catálogo en Línea (OPAC) - Búsqueda de Acervo 🌐</h1>
+    
+    <div class="search-controls">
+        <input type="text" id="queryText" placeholder="Buscar por Título o Autor..." style="flex-basis: 60%;">
+        <select id="categoriaFilter" style="flex-basis: 30%;">
+            <option value="">Todas las Categorías</option>
+            </select>
+        <button onclick="buscarMateriales()" style="background-color: #007bff; color: white;">Buscar</button>
+    </div>
+
+    <h2>Resultados de la Búsqueda</h2>
+    <p id="loadingMessage">Cargando catálogo...</p>
+    
+    <table id="resultadosTable">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Editorial</th>
+                <th>Categorías</th>
+                <th>Año</th>
+                <th>Estado Stock</th>
+                <th>Ver Detalle</th>
+            </tr>
+        </thead>
+        <tbody id="resultadosBody">
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    // ******************************************************
+    // LÓGICA JAVASCRIPT: HU-CONS01/02/03 (OPAC COMPLETO)
+    // ******************************************************
+    
+    const API_LISTAS = '/api/listas_catalogacion'; 
+    const API_BUSQUEDA = '/api/opac/buscar';
+    const API_RESERVAR = '/api/opac/reservar'; // Nueva API de reserva
+    const API_DETALLE = '/api/opac/detalle';
+
+    // (Dejar la función cargarCategorias sin cambios)
+
+    async function buscarMateriales() {
+        const queryText = document.getElementById('queryText').value;
+        const categoriaId = document.getElementById('categoriaFilter').value;
+        const resultadosBody = document.getElementById('resultadosBody');
+        const loadingMessage = document.getElementById('loadingMessage');
+        
+        resultadosBody.innerHTML = '';
+        loadingMessage.textContent = 'Buscando...';
+        
+        // Construir URL con parámetros
+        const url = new URL(window.location.origin + API_BUSQUEDA);
+        if (queryText) url.searchParams.append('query', queryText);
+        if (categoriaId) url.searchParams.append('categoria_id', categoriaId);
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Error en la búsqueda.');
+            
+            const materiales = await response.json();
+            
+            loadingMessage.textContent = ''; 
+
+            if (materiales.length === 0) {
+                resultadosBody.innerHTML = '<tr><td colspan="7">No se encontraron resultados para su búsqueda.</td></tr>';
+                return;
+            }
+
+            materiales.forEach(m => {
+                const row = resultadosBody.insertRow();
+                const stockDisponible = m.ejemplares_disponibles;
+
+                let estadoStock = '';
+                let estadoClase = '';
+                let accionesHTML = '';
+
+                if (stockDisponible > 0) {
+                    estadoStock = `Disponible (${stockDisponible})`;
+                    estadoClase = 'disponible';
+                    // Si está disponible, solo permite ver el detalle
+                    accionesHTML = `<button onclick="mostrarDetalle(${m.id_material})" style="background-color: #007bff;">Ver Detalle</button>`; 
+                } else {
+                    estadoStock = 'Agotado (0)';
+                    estadoClase = 'prestado';
+                    // 🚨 CAMBIO CLAVE: Si está agotado, permite reservar (HU-CONS03)
+                    accionesHTML = `<button onclick="registrarReserva(${m.id_material})" style="background-color: #ff9900;">Reservar</button>`;
+                }
+
+                row.insertCell(0).textContent = m.titulo;
+                row.insertCell(1).textContent = m.nombre_autor;
+                row.insertCell(2).textContent = m.nombre_editorial;
+                row.insertCell(3).textContent = m.categorias || 'N/A';
+                row.insertCell(4).textContent = m.anio_publicacion;
+                
+                const stockCell = row.insertCell(5);
+                stockCell.textContent = estadoStock;
+                stockCell.classList.add(estadoClase);
+                
+                row.insertCell(6).innerHTML = accionesHTML;
+            });
+
+        } catch (error) {
+            console.error("Error en la búsqueda:", error);
+            loadingMessage.textContent = 'Error al cargar los resultados del catálogo.';
+        }
+    }
+    
+    // ------------------------------------------------------------------
+    // FUNCIÓN: REGISTRAR RESERVA (HU-CONS03)
+    // ------------------------------------------------------------------
+    async function registrarReserva(materialId) {
+        if (!confirm("Este material está agotado. ¿Desea registrar una reserva para ser el próximo en la lista de espera? (Debe estar logueado)")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(API_RESERVAR, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ material_id: materialId })
+            });
+
+            const result = await response.json();
+
+            // Usamos alert porque el OPAC no tiene un div de mensaje visible fácil
+            if (response.ok) {
+                alert(result.message || 'Reserva registrada con éxito.');
+            } else {
+                // Captura errores de negocio: "Ya tienes una reserva activa" o "No logueado"
+                alert("Error al reservar: " + (result.error || 'Fallo desconocido. Inicie sesión si no lo ha hecho.'));
+            }
+
+        } catch (error) {
+            console.error("Error de conexión al reservar:", error);
+            alert("Error de conexión con el servidor.");
+        }
+    }
+    
+    // ------------------------------------------------------------------
+    // FUNCIÓN: MOSTRAR DETALLE (HU-CONS02) - Implementación Real
+    // ------------------------------------------------------------------
+    async function mostrarDetalle(materialId) {
+        try {
+            const response = await fetch(`${API_DETALLE}/${materialId}`);
+            
+            if (!response.ok) {
+                alert("Error: No se pudo obtener el detalle del material.");
+                return;
+            }
+            
+            const detalle = await response.json();
+            
+            const stockStatus = detalle.ejemplares_disponibles > 0 
+                ? `DISPONIBLE (${detalle.ejemplares_disponibles} de ${detalle.ejemplares_totales})`
+                : `AGOTADO (0 de ${detalle.ejemplares_totales})`;
+            
+            const detalleMensaje = `
+--- FICHA DE DETALLE ---
+
+Título: ${detalle.titulo}
+Autor: ${detalle.nombre_autor}
+Editorial: ${detalle.nombre_editorial}
+ISBN: ${detalle.isbn}
+Año: ${detalle.anio_publicacion}
+
+Categorías: ${detalle.categorias || 'Sin Clasificar'}
+
+ESTADO DE STOCK: ${stockStatus}
+`;
+            alert(detalleMensaje); // Usa alert o implementa un modal HTML más avanzado
+
+        } catch (error) {
+            console.error("Error al obtener el detalle:", error);
+            alert("Error de conexión al obtener la ficha detallada.");
+        }
+    }
+    // Carga inicial
+    window.onload = () => {
+        cargarCategorias();
+        buscarMateriales(); // Cargar la lista completa al inicio
+    };
+</script>
+
+</body>
+</html>

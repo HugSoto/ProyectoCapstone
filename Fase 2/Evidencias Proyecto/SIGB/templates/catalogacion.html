@@ -39,25 +39,29 @@
         <label for="anio">Año de Publicación:</label>
         <input type="number" id="anio" name="anio" min="1000" max="2099" required>
 
-        <label for="ejemplares">Total de Ejemplares (Stock):</label>
-        <input type="number" id="ejemplares" name="ejemplares" min="1" required value="1">
+        <label for="ejemplares_totales">Total de Ejemplares (Stock):</label>
+        <input type="number" id="ejemplares_totales" name="ejemplares_totales" min="0" required>
 
-        <label for="autor">Autor:</label>
+        <label for="ejemplares_disponibles">Ejemplares Disponibles:</label>
+        <input type="number" id="ejemplares_disponibles" name="ejemplares_disponibles" min="0" required>
+        
+        <label for="autores">Autor:</label>
         <select id="autor" name="autor_id" required>
             <option value="">Cargando Autores...</option>
         </select>
 
-        <label for="editorial">Editorial:</label>
+        <label for="editoriales">Editorial:</label>
         <select id="editorial" name="editorial_id" required>
             <option value="">Cargando Editoriales...</option>
         </select>
 
         <label for="categoria">Categoría:</label>
-        <select id="categoria" name="categoria_id" required>
+        <select id="categoria" name="categoria_id" required multiple size="5">
             <option value="">Cargando Categorías...</option>
         </select>
         
-        <button type="submit">Guardar Material</button>
+        <button type="submit" id="submitBtn">Guardar Material</button>
+        <button type="button" onclick="resetForm()" style="background-color: #ffc107;">Cancelar Edición</button>
     </form>
 
     <div id="message" class="message"></div>
@@ -91,156 +95,270 @@
     // URLs de la API Flask
     const API_LISTAS = '/api/listas_catalogacion';
     const API_GUARDAR = '/api/catalogacion/guardar'; 
-    const API_LISTAR = '/api/catalogacion/listar'; // NUEVA API DE LECTURA
+    const API_EDITAR = '/api/catalogacion/editar'; 
+    const API_ELIMINAR = '/api/catalogacion/eliminar';
+    const API_OBTENER = '/api/catalogacion/obtener'; // Para cargar datos al editar
+    const API_LISTAR = '/api/catalogacion/listar';
 
     // ------------------------------------------------------------------
-    // FUNCIÓN DE CARGA INICIAL (LISTAS DE APOYO Y LISTADO DE MATERIALES)
+    // FUNCIÓN DE CARGA INICIAL
     // ------------------------------------------------------------------
     async function cargarDatosIniciales() {
         await cargarListasApoyo();
-        await listarMateriales(); // Llamada a la nueva función
+        await listarMateriales();
     }
 
     // Función para obtener los datos de la API y llenar los selectores (HU-CAT01)
     async function cargarListasApoyo() {
-        // ... (Tu código actual para cargar listas) ...
-        try {
-            const response = await fetch(API_LISTAS);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            const data = await response.json();
+    try {
+        const response = await fetch(API_LISTAS);
+        
+        // 🚨 VERIFICACIÓN CRÍTICA DE ESTADO HTTP (Seguridad y Conexión)
+        if (!response.ok) {
+             const errorData = await response.json().catch(() => ({error: `Fallo HTTP: ${response.status}`}));
+             mostrarMensaje('error', `Error al cargar catálogos: ${errorData.error}. Por favor, inicie sesión o revise Flask.`);
+             throw new Error(`Fallo de conexión o seguridad: ${response.status}`);
+        }
+        
+        const data = await response.json();
 
             // 1. Llenar Autores
             const selectAutor = document.getElementById('autor');
-            selectAutor.innerHTML = '<option value="">-- Seleccione un Autor --</option>';
-            data.autores.forEach(autor => {
-                const option = document.createElement('option');
-                option.value = autor.id_autor;
-                option.textContent = autor.nombre_autor;
-                selectAutor.appendChild(option);
-            });
+            selectAutor.innerHTML = '<option value="">-- Seleccione un Autor --</option>'; 
+            
+            // ✅ La verificación de existencia evita el TypeError si Flask devuelve {}
+            if (data.autores && Array.isArray(data.autores)) {
+                data.autores.forEach(autor => {
+                    const option = document.createElement('option');
+                    option.value = autor.id_autor;
+                    option.textContent = autor.nombre_autor;
+                    selectAutor.appendChild(option);
+                });
+            }
 
             // 2. Llenar Editoriales
             const selectEditorial = document.getElementById('editorial');
-            selectEditorial.innerHTML = '<option value="">-- Seleccione una Editorial --</option>';
-            data.editoriales.forEach(editorial => {
-                const option = document.createElement('option');
-                option.value = editorial.id_editorial;
-                option.textContent = editorial.nombre_editorial;
-                selectEditorial.appendChild(option);
-            });
-
-            // 3. Llenar Categorías
+            selectEditorial.innerHTML = '<option value="">-- Seleccione una Editorial --</option>'; 
+            if (data.editoriales && Array.isArray(data.editoriales)) {
+                data.editoriales.forEach(editorial => {
+                    const option = document.createElement('option');
+                    option.value = editorial.id_editorial;
+                    option.textContent = editorial.nombre_editorial;
+                    selectEditorial.appendChild(option);
+                });
+            }
+            
+            // 3. Llenar Categorías (Múltiple) - HU-CAT06
             const selectCategoria = document.getElementById('categoria');
-            selectCategoria.innerHTML = '<option value="">-- Seleccione una Categoría --</option>';
-            data.categorias.forEach(categoria => {
-                const option = document.createElement('option');
-                option.value = categoria.id_categoria;
-                option.textContent = categoria.nombre_categoria;
-                selectCategoria.appendChild(option);
-            });
+            selectCategoria.innerHTML = ''; 
+            if (data.categorias && Array.isArray(data.categorias)) {
+                data.categorias.forEach(categoria => {
+                    const option = document.createElement('option');
+                    option.value = categoria.id_categoria;
+                    option.textContent = categoria.nombre_categoria;
+                    selectCategoria.appendChild(option);
+                });
+            }
 
         } catch (error) {
             console.error("Error al cargar las listas de apoyo:", error);
-            mostrarMensaje('error', 'Error al cargar Autores, Editoriales o Categorías. Verifique el servidor Flask.');
+            mostrarMensaje('error', "Fallo al cargar catálogos (Autores/Editoriales). Verifique su conexión y login.");
         }
     }
 
     // ------------------------------------------------------------------
-    // NUEVA FUNCIÓN: LISTADO DE MATERIALES (READ) - HU-CAT03
+    // LISTADO DE MATERIALES (READ)
     // ------------------------------------------------------------------
     async function listarMateriales() {
         const materialesBody = document.getElementById('materialesBody');
-        const loadingList = document.getElementById('loading-list');
-        materialesBody.innerHTML = ''; // Limpiar la tabla
+        const loadingMessage = document.getElementById('loading-list');
+        
+        materialesBody.innerHTML = ''; 
+        loadingMessage.textContent = 'Cargando inventario...';
+        loadingMessage.style.display = 'block';
 
         try {
             const response = await fetch(API_LISTAR);
             if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+                // Si falla, no es un error de seguridad, solo fallo de lectura.
+                throw new Error(`Error HTTP: ${response.status}.`);
             }
-            const materiales = await response.json();
             
-            loadingList.style.display = 'none'; // Ocultar mensaje de carga
+            const materiales = await response.json();
+            loadingMessage.style.display = 'none';
 
             if (materiales.length === 0) {
-                materialesBody.innerHTML = '<tr><td colspan="8">No hay materiales catalogados. Utilice el formulario de arriba para agregar uno.</td></tr>';
+                materialesBody.innerHTML = '<tr><td colspan="8">No hay materiales catalogados.</td></tr>';
                 return;
             }
-
-            // Iterar y crear las filas de la tabla
+            
             materiales.forEach(material => {
                 const row = materialesBody.insertRow();
-                
-                // M.id_material, M.titulo, A.nombre_autor, E.nombre_editorial, M.isbn, M.ejemplares_totales, M.ejemplares_disponibles
                 row.insertCell(0).textContent = material.id_material;
                 row.insertCell(1).textContent = material.titulo;
                 row.insertCell(2).textContent = material.nombre_autor;
-                row.insertCell(3).textContent = material.nombre_editorial;
+                row.insertCell(3).textContent = material.nombre_editorial; // Columna de Editorial
                 row.insertCell(4).textContent = material.isbn;
                 row.insertCell(5).textContent = material.ejemplares_totales;
                 row.insertCell(6).textContent = material.ejemplares_disponibles;
 
-                // Columna de Acciones (para Sprint 2)
+                // Acciones para Editar/Eliminar (HU-CAT04/05)
                 const actionsCell = row.insertCell(7);
-                actionsCell.innerHTML = `<button onclick="iniciarEdicion(${material.id_material})" style="background-color: #ffc107;">Editar</button>`;
-                // NOTA: La función iniciarEdicion se implementará en el Sprint 2 (HU-CAT04)
-
+                actionsCell.innerHTML = `
+                    <button onclick="iniciarEdicion(${material.id_material})" style="background-color: #007bff;">Editar</button>
+                    <button onclick="eliminarMaterial(${material.id_material})" style="background-color: #dc3545;">Eliminar</button>
+                `;
             });
 
         } catch (error) {
             console.error("Error al listar materiales:", error);
-            loadingList.textContent = 'Error: No se pudo cargar el inventario.';
-            loadingList.style.display = 'block';
+            loadingMessage.textContent = `Error al cargar inventario: ${error.message}`;
+            materialesBody.innerHTML = '<tr><td colspan="8">Fallo en la conexión o lectura.</td></tr>';
         }
     }
 
+    // ------------------------------------------------------------------
+    // FUNCIONES DE CRUD: EDITAR Y ELIMINAR (HU-CAT04/05)
+    // ------------------------------------------------------------------
 
-    // Función para manejar el envío del formulario (HU-CAT02)
+    // 🚨 HU-CAT04: Carga datos de un material para el formulario de edición
+    async function iniciarEdicion(materialId) {
+        try {
+            const response = await fetch(`${API_OBTENER}/${materialId}`);
+            const data = await response.json();
+            
+            // 1. Asignar datos al formulario
+            document.getElementById('editId').value = materialId; 
+            document.getElementById('titulo').value = data.titulo;
+            document.getElementById('isbn').value = data.isbn;
+            document.getElementById('anio').value = data.anio;
+            document.getElementById('ejemplares_totales').value = data.ejemplares_totales;
+            document.getElementById('ejemplares_disponibles').value = data.ejemplares_disponibles;
+            document.getElementById('autor').value = data.autor_id;
+            document.getElementById('editorial').value = data.editorial_id;
+
+            // 2. Seleccionar Categorías (HU-CAT06): El backend devuelve data.categorias_ids como lista de enteros
+            const selectCategoria = document.getElementById('categoria');
+            
+            // Deseleccionar todo primero
+            Array.from(selectCategoria.options).forEach(option => {
+                option.selected = false;
+            });
+            
+            // Seleccionar las categorías que vienen del backend
+            if (data.categorias_ids && Array.isArray(data.categorias_ids)) {
+                data.categorias_ids.forEach(catId => {
+                    const option = selectCategoria.querySelector(`option[value="${catId}"]`);
+                    if (option) {
+                        option.selected = true;
+                    }
+                });
+            }
+            
+            document.getElementById('submitBtn').textContent = 'Guardar Cambios';
+            mostrarMensaje('success', `Modo Edición iniciado para ID: ${materialId}`);
+
+        } catch (error) {
+            console.error("Error al cargar datos para edición:", error);
+            mostrarMensaje('error', "Error al cargar datos para edición. Revise el console log.");
+        }
+    }
+
+    // 🚨 HU-CAT05: Elimina material (llamada a la API segura)
+    async function eliminarMaterial(materialId) {
+        if (!confirm(`¿Desea eliminar el material ID ${materialId}? La eliminación será bloqueada si hay préstamos activos.`)) return;
+
+        try {
+            const response = await fetch(`${API_ELIMINAR}/${materialId}`, {
+                method: 'DELETE', 
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const result = await response.json();
+
+            if (response.ok) {
+                mostrarMensaje('success', result.message);
+                await listarMateriales();
+            } else {
+                mostrarMensaje('error', result.error || 'Fallo de conexión o seguridad.');
+            }
+        } catch (error) {
+            console.error("Error de conexión:", error);
+            mostrarMensaje('error', 'Fallo de conexión al eliminar.');
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // FUNCIÓN PRINCIPAL: ENVÍO DE FORMULARIO (CREATE/UPDATE)
+    // ------------------------------------------------------------------
     document.getElementById('catalogacionForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); 
-
+        event.preventDefault(); // Evita la recarga de la página
+        
+        const id = document.getElementById('editId').value;
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
 
+        // Eliminar 'categoria_id' del objeto JSON si se usa el selector múltiple
+        delete data.categoria_id; 
+
+        // 🚨 Obtener MÚLTIPLES CATEGORÍAS (HU-CAT06)
+        const select = document.getElementById('categoria');
+        const selectedCategories = Array.from(select.options)
+                                    .filter(option => option.selected)
+                                    .map(option => parseInt(option.value));
+        
+        data.categorias_ids = selectedCategories; // Añadir la lista al objeto JSON
+
+        let url = id ? `${API_EDITAR}/${id}` : API_GUARDAR;
+        let method = id ? 'PUT' : 'POST';
+
+        // 🚨 PRUEBA DE CONEXIÓN Y ENVÍO (Resuelve el fallo silencioso)
         try {
-            const response = await fetch(API_GUARDAR, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                mostrarMensaje('success', result.message || 'Material catalogado con éxito!');
-                this.reset(); // Limpiar formulario
-                await cargarDatosIniciales(); // Recargar listas Y el listado de materiales
+                mostrarMensaje('success', result.message || 'Operación exitosa!');
+                this.reset();
+                // Limpieza del formulario después de guardar/editar
+                document.getElementById('editId').value = '';
+                document.getElementById('submitBtn').textContent = 'Guardar Material';
+                await cargarDatosIniciales(); // Recarga las listas y la tabla
             } else {
-                mostrarMensaje('error', result.error || 'Error desconocido al catalogar.');
+                // Captura errores de seguridad (401/403) o reglas de negocio (400)
+                mostrarMensaje('error', "Error: " + (result.error || 'Fallo de seguridad (¿Logueado como Bibliotecario?) o de servidor.'));
             }
-
         } catch (error) {
-            console.error("Error en el envío del formulario:", error);
-            mostrarMensaje('error', 'Error de conexión con el servidor. Verifique Flask.');
+            console.error("Error crítico de red/conexión:", error);
+            mostrarMensaje('error', 'Error crítico de red. El servidor no responde.');
         }
     });
 
-    // Función auxiliar para mostrar mensajes al usuario
+    // Función auxiliar para mostrar mensajes
     function mostrarMensaje(type, text) {
         const messageDiv = document.getElementById('message');
         messageDiv.className = `message ${type}`;
         messageDiv.textContent = text;
         messageDiv.style.display = 'block';
         
-        // Ocultar mensaje después de 5 segundos
         setTimeout(() => {
             messageDiv.style.display = 'none';
         }, 5000);
     }
+
+    function resetForm() {
+        document.getElementById('catalogacionForm').reset();
+        document.getElementById('editId').value = ''; 
+        document.getElementById('submitBtn').textContent = 'Guardar Material'; 
+        document.getElementById('message').style.display = 'none'; 
+    }
+    // Campo oculto para edición
+    document.getElementById('catalogacionForm').insertAdjacentHTML('afterbegin', '<input type="hidden" id="editId" value="">');
 
     // Iniciar la carga de datos al cargar la página
     window.onload = cargarDatosIniciales;
