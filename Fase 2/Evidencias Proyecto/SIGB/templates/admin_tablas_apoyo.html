@@ -5,24 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Catálogos de Apoyo - SIGB</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #800080; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 30px; }
-        .section-header { margin-top: 40px; padding-bottom: 5px; border-bottom: 1px dashed #ddd; }
+        :root {
+            --dgac-blue: #004d99; 
+            --dgac-gold: #ffc107; 
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f4f7f9;
+        }
         
-        /* Estilos de tabla y formulario */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
-        th { background-color: #800080; color: white; }
-        button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-        .btn-guardar { background-color: #28a745; color: white; }
-        .btn-eliminar { background-color: #dc3545; color: white; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-light); 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
         
-        .form-inline { display: flex; gap: 10px; margin-bottom: 20px; }
-        .form-inline input { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .message-box { padding: 10px; margin-bottom: 10px; border-radius: 5px; font-weight: bold; display: none; }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        h1 { 
+            color: var(--dgac-blue); 
+            border-bottom: 3px solid var(--dgac-gold);
+            padding-bottom: 10px; 
+            margin-top: 0; 
+        }
+        .section-header { 
+            margin-top: 40px; 
+            padding-bottom: 5px; 
+            border-bottom: 1px solid #ccc;
+        }
+        .section-header h2 {
+            color: var(--dgac-blue);
+            font-size: 1.3em;
+            margin-top: 5px;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+        }
+        th, td { 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+            font-size: 14px; 
+        }
+        th { 
+            background-color: var(--dgac-blue); 
+            color: white; 
+        }
+        
+        button { 
+            padding: 6px 12px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin-right: 5px; 
+            transition: background-color 0.2s;
+        }
+        .btn-guardar { 
+            background-color: var(--success-color); 
+            color: white; 
+        }
+        .btn-guardar:hover {
+            background-color: #1e7e34;
+        }
+        .btn-eliminar { 
+            background-color: var(--danger-color); 
+            color: white; 
+        }
+        .btn-eliminar:hover {
+            background-color: #c82333;
+        }
+        
+        .form-inline { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 20px; 
+            align-items: center;
+        }
+        .form-inline input { 
+            flex-grow: 1; 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        
+        .message-box { 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            display: none; 
+        }
+        .success { 
+            background-color: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+        }
+        .error { 
+            background-color: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
     </style>
 </head>
 <body>
@@ -78,16 +169,13 @@
 </div>
 
 <script>
-    // URLs de API del Back-end
-    const API_LISTAS = '/api/listas_catalogacion'; // API para LISTAR todas las tablas
+    const API_LISTAS = '/api/listas_catalogacion'; 
     const API_BASE = '/api/'; 
     
-    // Rutas y configuración de nombres de campo (Payload keys) para cada tabla
     const API_CONFIG = {
         autor: { 
             guardar: API_BASE + 'autor/guardar', 
             eliminar: API_BASE + 'autor/eliminar',
-            // El backend espera 'nombre_autor' en el JSON.
             key_nombre: 'nombre_autor', 
             idKey: 'id_autor',
             bodyId: 'autorBody'
@@ -95,7 +183,6 @@
         editorial: { 
             guardar: API_BASE + 'editorial/guardar', 
             eliminar: API_BASE + 'editorial/eliminar',
-            // El backend espera 'nombre_editorial' en el JSON.
             key_nombre: 'nombre_editorial', 
             idKey: 'id_editorial',
             bodyId: 'editorialBody'
@@ -103,30 +190,24 @@
         categoria: { 
             guardar: API_BASE + 'categoria/guardar', 
             eliminar: API_BASE + 'categoria/eliminar',
-            // El backend espera 'nombre_categoria' y 'descripcion' en el JSON.
             key_nombre: 'nombre_categoria', 
             idKey: 'id_categoria',
             bodyId: 'categoriaBody'
         }
     };
     
-    // **********************************************************
-    // FUNCIÓN DE LISTADO (READ) - Utiliza la API de Cache (T07)
-    // **********************************************************
     async function cargarListasApoyo() {
         try {
             const response = await fetch(API_LISTAS);
             if (!response.ok) throw new Error('Fallo al obtener las listas de apoyo.');
             
             const data = await response.json();
-            
-            // Renderizar las tres tablas
             renderTable(data.autores, 'autorBody', 'id_autor', 'nombre_autor', 'autor');
             renderTable(data.editoriales, 'editorialBody', 'id_editorial', 'nombre_editorial', 'editorial');
             renderTable(data.categorias, 'categoriaBody', 'id_categoria', 'nombre_categoria', 'categoria');
 
         } catch (error) {
-            mostrarMensaje(null, 'error', `Error al cargar listas: ${error.message}. Verifique el servidor.`);
+            mostrarMensaje(null, 'error', `Error al cargar listas: ${error.message}. Verifique el servidor y su login.`);
             console.error(error);
         }
     }
@@ -155,9 +236,6 @@
         }
     }
 
-    // **********************************************************
-    // FUNCIÓN DE GUARDADO (CREATE)
-    // **********************************************************
     async function guardarItem(type) {
         const config = API_CONFIG[type];
         const inputElement = document.getElementById(`${type}Nombre`);
@@ -169,7 +247,6 @@
         }
 
         let payload = {};
-        // 🚨 CAMBIO CRÍTICO: Usamos la clave de campo correcta del backend (ej: nombre_editorial)
         payload[config.key_nombre] = nombre;
         
         try {
@@ -186,7 +263,6 @@
                 inputElement.value = ''; 
                 cargarListasApoyo(); 
             } else {
-                // Captura errores de seguridad (401/403) o SQL (400)
                 mostrarMensaje(type, 'error', result.error || 'Fallo al guardar. Verifique si ya existe o está logueado.');
             }
 
@@ -196,9 +272,6 @@
         }
     }
 
-    // **********************************************************
-    // FUNCIÓN DE ELIMINACIÓN (DELETE)
-    // **********************************************************
     async function eliminarItem(id, type) {
         const config = API_CONFIG[type];
         if (!confirm(`¿Está seguro de eliminar el registro ID ${id} (${type})? Esto fallará si está en uso.`)) return;
@@ -206,7 +279,6 @@
         try {
             const response = await fetch(`${config.eliminar}/${id}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
             });
 
             const result = await response.json();
@@ -215,7 +287,6 @@
                 mostrarMensaje(type, 'success', result.message || `${type} eliminado con éxito.`);
                 cargarListasApoyo(); 
             } else {
-                // Captura el error 400 por violación de FK
                 mostrarMensaje(type, 'error', result.error || 'Fallo al eliminar. El registro está en uso (FK).');
             }
 
@@ -225,11 +296,7 @@
         }
     }
 
-    // **********************************************************
-    // FUNCIÓN DE UTILIDAD: MENSAJES
-    // **********************************************************
     function mostrarMensaje(type, className, message) {
-        // Mapear el tipo de elemento al ID de su caja de mensaje
         const elementMap = { autor: 'autor-message', editorial: 'editorial-message', categoria: 'categoria-message' };
         const msgBox = document.getElementById(elementMap[type]);
         
@@ -246,6 +313,3 @@
 
     window.onload = cargarListasApoyo;
 </script>
-
-</body>
-</html>

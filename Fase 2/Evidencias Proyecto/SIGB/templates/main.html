@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Principal - SIGB DGAC</title>
+    <style>
+        :root {
+            --dgac-blue: #004d99;
+            --dgac-gold: #ffc107;
+            --bg-light: #f4f7f9;
+        }
+        body { font-family: Arial, sans-serif; margin: 0; background-color: var(--bg-light); }
+        .header { background-color: var(--dgac-blue); color: white; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0; font-size: 14px; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+
+        .nav-menu { background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .nav-menu h2 { color: var(--dgac-blue); border-bottom: 2px solid var(--dgac-gold); padding-bottom: 10px; margin-top: 0; }
+        .nav-menu a { display: block; padding: 10px 15px; margin: 5px 0; text-decoration: none; color: #333; background-color: #eee; border-radius: 4px; transition: background-color 0.2s; }
+        .nav-menu a:hover { background-color: var(--dgac-gold); color: var(--dgac-blue); font-weight: bold; }
+        
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .metric-card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid var(--dgac-blue); }
+        .metric-card h3 { margin: 0 0 10px; color: var(--dgac-blue); font-size: 16px; }
+        .metric-value { font-size: 32px; font-weight: bold; color: #333; }
+        
+        .ultimos-materiales li { padding: 8px 0; border-bottom: 1px dashed #ddd; }
+        .ultimos-materiales li:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="container">
+        <p id="welcome-message">Bienvenido al SIGB, [Cargando Nombre] | Rol: [Cargando Rol]</p>
+        <h1>Sistema Integrado de Gestión de Biblioteca (SIGB) ✈️</h1>
+        <a href="/logout" style="color: var(--dgac-gold); text-decoration: none;">(Cerrar Sesión)</a>
+    </div>
+</div>
+
+<div class="container">
+    
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Total de Materiales Catalogados</h3>
+            <div id="totalMateriales" class="metric-value">...</div>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--dgac-gold);">
+            <h3>Préstamos Activos Hoy</h3>
+            <div id="prestamosActivos" class="metric-value">...</div>
+        </div>
+    </div>
+
+    <div class="nav-menu">
+        <h2>Acciones Rápidas</h2>
+        <div id="quick-actions-menu">
+            <p>Cargando menú...</p>
+            </div>
+    </div>
+
+    <div class="nav-menu">
+        <h2>Últimos Materiales Añadidos</h2>
+        <ul id="ultimosMaterialesList" class="ultimos-materiales">
+            <li>Cargando datos...</li>
+        </ul>
+    </div>
+
+</div>
+
+<script>
+    const API_METRICS = '/api/admin/metrics';
+
+    async function loadDashboard() {
+        try {
+            const response = await fetch(API_METRICS);
+            if (!response.ok) {
+                document.getElementById('welcome-message').textContent = 'Error: No se pudo cargar el dashboard. Inicie sesión.';
+                document.getElementById('quick-actions-menu').innerHTML = '<a href="/login">Ir a Login</a>';
+                return;
+            }
+            
+            const data = await response.json();
+            
+            document.getElementById('welcome-message').textContent = 
+                `Bienvenido al SIGB, ${data.user_name} | Rol: ${data.user_role}`;
+            
+            document.getElementById('totalMateriales').textContent = data.total_materiales.toLocaleString();
+            document.getElementById('prestamosActivos').textContent = data.prestamos_activos.toLocaleString();
+
+            renderMenu(data.user_role);
+
+            renderUltimosMateriales(data.ultimos_materiales);
+
+        } catch (error) {
+            console.error("Error al cargar el dashboard:", error);
+            document.getElementById('quick-actions-menu').innerHTML = '<p>Fallo de conexión con el servidor.</p>';
+        }
+    }
+
+    function renderMenu(role) {
+        const menu = document.getElementById('quick-actions-menu');
+        menu.innerHTML = '';
+        
+        menu.innerHTML += '<p style="font-weight: bold; margin-bottom: 5px;">Funciones de Acceso:</p>';
+        menu.innerHTML += '<a href="/opac">🔎 Catálogo en Línea (OPAC)</a>';
+        
+        if (role === 'Bibliotecario' || role === 'Admin') {
+            menu.innerHTML += '<hr style="margin: 10px 0;">';
+            menu.innerHTML += '<p style="font-weight: bold; margin-bottom: 5px;">Gestión de Bibliotecario:</p>';
+            menu.innerHTML += '<a href="/catalogacion">📑 Catalogación de Materiales (CRUD)</a>';
+            menu.innerHTML += '<a href="/circulacion">🔄 Registro de Préstamos y Devoluciones</a>';
+            menu.innerHTML += '<a href="/admin/catalogos">🏷️ CRUD de Autores/Editoriales/Categorías</a>';
+            menu.innerHTML += '<a href="/admin/reportes">📊 Reportes de Uso y Mora</a>';
+        }
+        
+        if (role === 'Admin') {
+            menu.innerHTML += '<hr style="margin: 10px 0;">';
+            menu.innerHTML += '<p style="font-weight: bold; margin-bottom: 5px;">Funciones de Administrador:</p>';
+            menu.innerHTML += '<a href="/admin/usuarios">🔑 CRUD de Cuentas de Usuario</a>';
+        }
+    }
+
+    function renderUltimosMateriales(materiales) {
+        const list = document.getElementById('ultimosMaterialesList');
+        list.innerHTML = '';
+        if (materiales.length === 0) {
+            list.innerHTML = '<li>No se han registrado materiales recientemente.</li>';
+            return;
+        }
+
+        materiales.forEach(m => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `[${m.fecha_ingreso || 'Sin fecha'}] ${m.titulo}`;
+            list.appendChild(listItem);
+        });
+    }
+
+    window.onload = loadDashboard;
+</script>
+
+</body>
+</html>

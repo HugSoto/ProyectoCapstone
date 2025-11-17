@@ -5,22 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes de Gestión - SIGB</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        h1 { color: #800080; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0; }
-        h2 { color: #333; margin-top: 40px; border-left: 5px solid #800080; padding-left: 10px; }
+        :root {
+            --dgac-blue: #004d99; 
+            --dgac-gold: #ffc107; 
+            --bg-light: #f4f7f9;
+            --mora-high: #dc3545; 
+        }
         
-        /* Estilo para las secciones de reporte */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: var(--bg-light); 
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        h1 { 
+            color: var(--dgac-blue); 
+            border-bottom: 3px solid var(--dgac-gold); 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+        }
+        h2 { 
+            color: #333; 
+            margin-top: 40px; 
+            border-left: 5px solid var(--dgac-blue); 
+            padding-left: 10px; 
+            font-size: 1.5em;
+        }
         .reporte-section { margin-bottom: 50px; }
         
-        /* Estilos de la tabla */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
-        th { background-color: #800080; color: white; }
-        .mora-high { background-color: #f8d7da; color: #721c24; font-weight: bold; } /* Resalta la mora */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            font-size: 14px;
+        }
+        th, td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+        }
+        th { 
+            background-color: var(--dgac-blue); 
+            color: white; 
+            font-weight: bold;
+        }
+        tr:nth-child(even) { 
+            background-color: #f9f9f9;
+        }
         
-        .loading-message { text-align: center; color: #555; margin-top: 20px; }
-        .error-message { text-align: center; color: red; margin-top: 20px; font-weight: bold; }
+        .mora-high { 
+            background-color: #ffe0e0; 
+            color: var(--mora-high); 
+            font-weight: bold; 
+        }
+        .loading-message, .error-message { 
+            text-align: center; 
+            margin-top: 20px; 
+            padding: 10px;
+        }
+        .error-message { 
+            background-color: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -74,14 +130,10 @@
     const API_REPORTE_USO = '/api/admin/reportes/uso';
     const API_REPORTE_MORA = '/api/admin/reportes/mora';
     
-    // Función para formatear números como moneda (CLP simplificado)
     function formatCurrency(amount) {
-        return '$' + amount.toLocaleString('es-CL');
+        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(amount);
     }
 
-    // **********************************************************
-    // FUNCIÓN PARA CARGAR REPORTE DE USO (HU-ADMIN04)
-    // **********************************************************
     async function cargarReporteUso() {
         const body = document.getElementById('reporteUsoBody');
         const loading = document.getElementById('loadingUso');
@@ -124,9 +176,6 @@
         }
     }
 
-    // **********************************************************
-    // FUNCIÓN PARA CARGAR REPORTE DE MORA (HU-ADMIN05)
-    // **********************************************************
     async function cargarReporteMora() {
         const body = document.getElementById('reporteMoraBody');
         const loading = document.getElementById('loadingMora');
@@ -157,7 +206,6 @@
             reporte.forEach(item => {
                 const row = body.insertRow();
                 
-                // Resaltar filas con mora alta (ej: > 10 días)
                 if (item.dias_mora > 10) { 
                     row.classList.add('mora-high'); 
                 }

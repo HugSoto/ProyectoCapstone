@@ -5,23 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Circulación - SIGB</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        h1, h2 { color: #007bff; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 30px; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; }
-        input[type="text"], input[type="date"] { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-right: 10px;}
-        button:hover { background-color: #1e7e34; }
-        .message { padding: 10px; margin-top: 20px; border-radius: 4px; display: none; }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        :root {
+            --dgac-blue: #004d99;
+            --dgac-gold: #ffc107;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f4f7f9;
+        }
+
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: var(--bg-light); 
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
         
-        /* Estilos para la tabla de préstamos */
-        #prestamosTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        #prestamosTable th, #prestamosTable td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
-        #prestamosTable th { background-color: #007bff; color: white; }
-        .vencido { background-color: #f8d7da; font-weight: bold; }
-        .acciones button { background-color: #dc3545; } /* Botón Devolver */
+        h1 { 
+            color: var(--dgac-blue); 
+            border-bottom: 3px solid var(--dgac-gold); 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+            font-size: 1.8em;
+        }
+        h2 { 
+            color: #333; 
+            margin-top: 30px; 
+            border-left: 5px solid var(--dgac-blue);
+            padding-left: 10px;
+            font-size: 1.4em;
+        }
+
+        label { 
+            display: block; 
+            margin: 10px 0 5px; 
+            font-weight: bold; 
+        }
+        input[type="text"], input[type="number"], input[type="date"] { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        
+        button[type="submit"] {
+            background-color: var(--success-color); 
+            color: white; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-right: 10px;
+            transition: background-color 0.2s;
+        }
+        button[type="submit"]:hover { 
+            background-color: #1e7e34; 
+        }
+
+        #prestamosTable { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            font-size: 13px;
+        }
+        #prestamosTable th, #prestamosTable td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+        }
+        #prestamosTable th { 
+            background-color: var(--dgac-blue); 
+            color: white; 
+        }
+        
+        .vencido { 
+            background-color: #ffe0e0;
+            color: var(--danger-color); 
+            font-weight: bold; 
+        }
+        .acciones button { 
+            background-color: var(--danger-color);
+            padding: 6px 12px; 
+            color: white; 
+        }
     </style>
 </head>
 <body>
@@ -35,11 +111,11 @@
         <div style="display: flex; gap: 20px;">
             <div style="flex: 1;">
                 <label for="rut_usuario">RUT del Usuario (Estudiante/Bibliotecario):</label>
-                <input type="text" id="rut_usuario" name="rut_usuario" placeholder="Ej: 20594886-4" required>
+                <input type="text" id="rut_usuario" name="rut_usuario" placeholder="Ej: 20594886-4 (Incluir guion)" required>
             </div>
             <div style="flex: 1;">
                 <label for="material_id">ID del Material a Prestar (Desde Inventario):</label>
-                <input type="number" id="material_id" name="material_id" placeholder="ID del libro" required>
+                <input type="number" id="material_id" name="material_id" placeholder="ID del libro (Ej: 1)" required>
             </div>
         </div>
         
@@ -69,33 +145,20 @@
 </div>
 
 <script>
-    // ******************************************************
-    // LÓGICA JAVASCRIPT: HU-CIRC01 (CREATE) y HU-CIRC04 (READ)
-    // ******************************************************
-
-    // Rutas de API definidas en app.py
     const API_REGISTRAR_PRESTAMO = '/api/circulacion/prestamo'; 
     const API_LISTAR_PRESTAMOS = '/api/circulacion/prestamos_activos'; 
     const API_REGISTRAR_DEVOLUCION = '/api/circulacion/devolucion';
-    // const API_REGISTRAR_DEVOLUCION = '/api/circulacion/devolucion'; // Para HU-CIRC02
-
-    // ------------------------------------------------------------------
-    // FUNCIÓN DE CARGA INICIAL (LISTADO DE PRÉSTAMOS ACTIVOS)
-    // ------------------------------------------------------------------
+    
     async function cargarDatosIniciales() {
         await listarPrestamosActivos(); 
     }
 
-    // ------------------------------------------------------------------
-    // FUNCIÓN: REGISTRAR PRÉSTAMO (CREATE) - HU-CIRC01
-    // ------------------------------------------------------------------
     document.getElementById('prestamoForm').addEventListener('submit', async function(event) {
         event.preventDefault(); 
 
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
 
-        // Convertir el material_id a entero si es necesario (el formulario lo envía como string)
         data.material_id = parseInt(data.material_id);
 
         try {
@@ -111,10 +174,9 @@
 
             if (response.ok) {
                 mostrarMensaje('success', result.message || 'Préstamo registrado con éxito.');
-                this.reset(); // Limpiar formulario
-                await listarPrestamosActivos(); // Recargar la lista para mostrar el cambio de stock
+                this.reset();
+                await listarPrestamosActivos();
             } else {
-                // Captura errores de negocio como "No hay ejemplares disponibles" o "Usuario no encontrado"
                 mostrarMensaje('error', result.error || 'Error desconocido al registrar el préstamo.');
             }
 
@@ -124,62 +186,56 @@
         }
     });
 
-
-    // ------------------------------------------------------------------
-    // FUNCIÓN: LISTAR PRÉSTAMOS ACTIVOS (READ) - HU-CIRC04
-    // ------------------------------------------------------------------
     async function listarPrestamosActivos() {
         const prestamosBody = document.getElementById('prestamosBody');
         const loadingList = document.getElementById('loading-list');
-        prestamosBody.innerHTML = ''; // Limpiar la tabla
+        prestamosBody.innerHTML = '';
         loadingList.style.display = 'block';
 
         try {
             const response = await fetch(API_LISTAR_PRESTAMOS);
             if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+                const status = response.status;
+                if (status === 403 || status === 401) {
+                    loadingList.textContent = '🚫 Acceso denegado. Inicie sesión como Bibliotecario.';
+                } else {
+                    throw new Error(`Error HTTP: ${status}`);
+                }
+                return;
             }
             const prestamos = await response.json();
             
-            loadingList.style.display = 'none'; // Ocultar mensaje de carga
+            loadingList.style.display = 'none'; 
 
             if (prestamos.length === 0) {
                 prestamosBody.innerHTML = '<tr><td colspan="7">No hay préstamos activos.</td></tr>';
                 return;
             }
 
-            // Función auxiliar para determinar si un préstamo está vencido
             const isVencido = (fechaDevolucion) => {
                 const hoy = new Date();
                 const fechaLimite = new Date(fechaDevolucion);
-                // Si la fecha límite es anterior a hoy, está vencido
                 return fechaLimite < hoy; 
             };
 
-            // Iterar y crear las filas de la tabla
             prestamos.forEach(p => {
                 const row = prestamosBody.insertRow();
-                
                 const vencido = isVencido(p.fecha_devolucion);
 
-                // Aplicar estilo si está vencido (Criterio de Aceptación HU-CIRC04)
                 if (vencido) {
                     row.classList.add('vencido');
                 }
 
                 row.insertCell(0).textContent = p.id_prestamo;
-                // NOTA: Se asume que la API devuelve el nombre del material y el RUT del usuario
                 row.insertCell(1).textContent = p.titulo_material; 
                 row.insertCell(2).textContent = p.rut_usuario; 
                 row.insertCell(3).textContent = p.fecha_prestamo;
                 row.insertCell(4).textContent = p.fecha_devolucion;
                 row.insertCell(5).textContent = vencido ? 'VENCIDO' : p.estado_prestamo;
 
-                // Columna de Acciones (para Devolución HU-CIRC02)
                 const actionsCell = row.insertCell(6);
                 actionsCell.classList.add('acciones');
-                // NOTA: La función registrarDevolucion se implementará para HU-CIRC02
-                actionsCell.innerHTML = `<button onclick="registrarDevolucion(${p.id_prestamo})" style="background-color: #dc3545;">Devolver</button>`; 
+                actionsCell.innerHTML = `<button onclick="registrarDevolucion(${p.id_prestamo})" style="background-color: var(--danger-color);">Devolver</button>`; 
             });
 
         } catch (error) {
@@ -189,9 +245,6 @@
         }
     }
 
-    // ------------------------------------------------------------------
-    // FUNCIÓN: REGISTRAR DEVOLUCIÓN (UPDATE/INCREMENT) - HU-CIRC02 & HU-CIRC03
-    // ------------------------------------------------------------------
     async function registrarDevolucion(id_prestamo) {
         if (!confirm(`¿Confirma que desea registrar la devolución del Préstamo ID: ${id_prestamo}? Esto liberará el stock.`)) {
             return;
@@ -209,23 +262,19 @@
             const result = await response.json();
 
             if (response.ok) {
-                // 🚨 AJUSTE CLAVE PARA HU-CIRC03 (Cálculo de Multas)
                 if (result.multa && result.multa > 0) {
-                    // Usamos la información de la multa devuelta por el backend
                     const multaFormateada = result.multa.toLocaleString('es-CL');
                     mostrarMensaje(
                         'error', 
                         `¡DEVOLUCIÓN TARDÍA! Se generó una multa de $${multaFormateada} por ${result.dias_retraso} días de retraso.`
                     );
                 } else {
-                    // Mensaje de éxito normal sin multa
                     mostrarMensaje('success', result.message || 'Devolución registrada. El material ha sido liberado.');
                 }
                 
-                await listarPrestamosActivos(); // Recargar la lista para que desaparezca el préstamo devuelto
+                await listarPrestamosActivos();
                 
             } else {
-                // Manejo de errores devueltos por la API (ej. préstamo ya devuelto)
                 mostrarMensaje('error', result.error || 'Error al registrar la devolución. Verifique el estado.');
             }
 
@@ -235,7 +284,6 @@
         }
     }
 
-    // Función auxiliar para mostrar mensajes al usuario (copiada de catalogacion.html)
     function mostrarMensaje(type, text) {
         const messageDiv = document.getElementById('message');
         messageDiv.className = `message ${type}`;
@@ -247,7 +295,6 @@
         }, 5000);
     }
 
-    // Iniciar la carga de datos al cargar la página
     window.onload = cargarDatosIniciales;
 </script>
 

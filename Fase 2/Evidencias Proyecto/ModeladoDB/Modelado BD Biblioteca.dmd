@@ -1,8 +1,0 @@
-<?xml version = '1.0' encoding = 'UTF-8'?>
-<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="Modelado BD Biblioteca" id="B2BB44D4-970B-A05F-5995-952B934009D9" version="3.5">
-<createdBy>hugo-</createdBy>
-<createdTime>2025-09-13 03:23:18 UTC</createdTime>
-<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
-<capitalNames>false</capitalNames>
-<designId>B2BB44D4-970B-A05F-5995-952B934009D9</designId>
-</OSDM_Design>

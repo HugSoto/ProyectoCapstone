@@ -5,21 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalogación de Material - Sistema de Biblioteca</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 30px; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-right: 10px;}
-        button:hover { background-color: #0056b3; }
+        :root {
+            --dgac-blue: #004d99; 
+            --dgac-gold: #ffc107;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --bg-light: #f4f7f9;
+        }
+
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: var(--bg-light); 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        h1 { 
+            color: var(--dgac-blue); 
+            border-bottom: 3px solid var(--dgac-gold); 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+            font-size: 1.8em;
+        }
+        h2 { 
+            color: #333; 
+            margin-top: 30px;
+            border-left: 5px solid var(--dgac-blue);
+            padding-left: 10px;
+            font-size: 1.4em;
+        }
+
+        label { 
+            display: block; 
+            margin: 10px 0 5px; 
+            font-weight: bold; 
+        }
+        input[type="text"], input[type="number"], input[type="email"], select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        
+        button { 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-right: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        #submitBtn { 
+            background-color: var(--success-color); 
+            color: white; 
+        }
+        #submitBtn:hover {
+            background-color: #1e7e34;
+        }
+        .btn-cancel {
+            background-color: var(--dgac-gold);
+            color: var(--dgac-blue);
+        }
+        .btn-cancel:hover {
+            background-color: #e0ac00;
+        }
+
+        #listaMaterialesTable { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        #listaMaterialesTable th, #listaMaterialesTable td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+            font-size: 13px; 
+        }
+        #listaMaterialesTable th { 
+            background-color: var(--dgac-blue); 
+            color: white; 
+        }
+        
+        .table-btn-edit {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+        }
+        .table-btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 6px 10px;
+        }
+
         .message { padding: 10px; margin-top: 20px; border-radius: 4px; display: none; }
         .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        
-        /* Estilos para la tabla de listado */
-        #listaMaterialesTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        #listaMaterialesTable th, #listaMaterialesTable td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
-        #listaMaterialesTable th { background-color: #007bff; color: white; }
     </style>
 </head>
 <body>
@@ -61,7 +153,7 @@
         </select>
         
         <button type="submit" id="submitBtn">Guardar Material</button>
-        <button type="button" onclick="resetForm()" style="background-color: #ffc107;">Cancelar Edición</button>
+        <button type="button" onclick="resetForm()" class="btn-cancel">Cancelar Edición</button>
     </form>
 
     <div id="message" class="message"></div>
@@ -79,7 +171,8 @@
                 <th>ISBN</th>
                 <th>Total</th>
                 <th>Disponible</th>
-                <th>Acciones</th> </tr>
+                <th>Acciones</th> 
+            </tr>
         </thead>
         <tbody id="materialesBody">
             </tbody>
@@ -88,45 +181,30 @@
 </div>
 
 <script>
-    // ******************************************************
-    // LÓGICA JAVASCRIPT: CONSUMO DE API Y RENDERIZACIÓN
-    // ******************************************************
-
-    // URLs de la API Flask
     const API_LISTAS = '/api/listas_catalogacion';
     const API_GUARDAR = '/api/catalogacion/guardar'; 
     const API_EDITAR = '/api/catalogacion/editar'; 
     const API_ELIMINAR = '/api/catalogacion/eliminar';
-    const API_OBTENER = '/api/catalogacion/obtener'; // Para cargar datos al editar
+    const API_OBTENER = '/api/catalogacion/obtener';
     const API_LISTAR = '/api/catalogacion/listar';
-
-    // ------------------------------------------------------------------
-    // FUNCIÓN DE CARGA INICIAL
-    // ------------------------------------------------------------------
+    
     async function cargarDatosIniciales() {
         await cargarListasApoyo();
         await listarMateriales();
     }
-
-    // Función para obtener los datos de la API y llenar los selectores (HU-CAT01)
+    
     async function cargarListasApoyo() {
-    try {
-        const response = await fetch(API_LISTAS);
-        
-        // 🚨 VERIFICACIÓN CRÍTICA DE ESTADO HTTP (Seguridad y Conexión)
-        if (!response.ok) {
-             const errorData = await response.json().catch(() => ({error: `Fallo HTTP: ${response.status}`}));
-             mostrarMensaje('error', `Error al cargar catálogos: ${errorData.error}. Por favor, inicie sesión o revise Flask.`);
-             throw new Error(`Fallo de conexión o seguridad: ${response.status}`);
-        }
-        
-        const data = await response.json();
-
-            // 1. Llenar Autores
+        try {
+            const response = await fetch(API_LISTAS);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({error: `Fallo HTTP: ${response.status}`}));
+                mostrarMensaje('error', `Error al cargar catálogos: ${errorData.error}. Por favor, inicie sesión o revise Flask.`);
+                throw new Error(`Fallo de conexión o seguridad: ${response.status}`);
+            }
+            
+            const data = await response.json();
             const selectAutor = document.getElementById('autor');
             selectAutor.innerHTML = '<option value="">-- Seleccione un Autor --</option>'; 
-            
-            // ✅ La verificación de existencia evita el TypeError si Flask devuelve {}
             if (data.autores && Array.isArray(data.autores)) {
                 data.autores.forEach(autor => {
                     const option = document.createElement('option');
@@ -135,8 +213,6 @@
                     selectAutor.appendChild(option);
                 });
             }
-
-            // 2. Llenar Editoriales
             const selectEditorial = document.getElementById('editorial');
             selectEditorial.innerHTML = '<option value="">-- Seleccione una Editorial --</option>'; 
             if (data.editoriales && Array.isArray(data.editoriales)) {
@@ -147,8 +223,6 @@
                     selectEditorial.appendChild(option);
                 });
             }
-            
-            // 3. Llenar Categorías (Múltiple) - HU-CAT06
             const selectCategoria = document.getElementById('categoria');
             selectCategoria.innerHTML = ''; 
             if (data.categorias && Array.isArray(data.categorias)) {
@@ -165,10 +239,7 @@
             mostrarMensaje('error', "Fallo al cargar catálogos (Autores/Editoriales). Verifique su conexión y login.");
         }
     }
-
-    // ------------------------------------------------------------------
-    // LISTADO DE MATERIALES (READ)
-    // ------------------------------------------------------------------
+    
     async function listarMateriales() {
         const materialesBody = document.getElementById('materialesBody');
         const loadingMessage = document.getElementById('loading-list');
@@ -180,8 +251,7 @@
         try {
             const response = await fetch(API_LISTAR);
             if (!response.ok) {
-                // Si falla, no es un error de seguridad, solo fallo de lectura.
-                throw new Error(`Error HTTP: ${response.status}.`);
+                throw new Error(`Error HTTP: ${response.status}. Verifique el servidor y su login.`);
             }
             
             const materiales = await response.json();
@@ -197,16 +267,15 @@
                 row.insertCell(0).textContent = material.id_material;
                 row.insertCell(1).textContent = material.titulo;
                 row.insertCell(2).textContent = material.nombre_autor;
-                row.insertCell(3).textContent = material.nombre_editorial; // Columna de Editorial
+                row.insertCell(3).textContent = material.nombre_editorial;
                 row.insertCell(4).textContent = material.isbn;
                 row.insertCell(5).textContent = material.ejemplares_totales;
                 row.insertCell(6).textContent = material.ejemplares_disponibles;
 
-                // Acciones para Editar/Eliminar (HU-CAT04/05)
                 const actionsCell = row.insertCell(7);
                 actionsCell.innerHTML = `
-                    <button onclick="iniciarEdicion(${material.id_material})" style="background-color: #007bff;">Editar</button>
-                    <button onclick="eliminarMaterial(${material.id_material})" style="background-color: #dc3545;">Eliminar</button>
+                    <button onclick="iniciarEdicion(${material.id_material})" class="table-btn-edit">Editar</button>
+                    <button onclick="eliminarMaterial(${material.id_material})" class="table-btn-delete">Eliminar</button>
                 `;
             });
 
@@ -216,18 +285,12 @@
             materialesBody.innerHTML = '<tr><td colspan="8">Fallo en la conexión o lectura.</td></tr>';
         }
     }
-
-    // ------------------------------------------------------------------
-    // FUNCIONES DE CRUD: EDITAR Y ELIMINAR (HU-CAT04/05)
-    // ------------------------------------------------------------------
-
-    // 🚨 HU-CAT04: Carga datos de un material para el formulario de edición
+    
     async function iniciarEdicion(materialId) {
         try {
             const response = await fetch(`${API_OBTENER}/${materialId}`);
             const data = await response.json();
-            
-            // 1. Asignar datos al formulario
+
             document.getElementById('editId').value = materialId; 
             document.getElementById('titulo').value = data.titulo;
             document.getElementById('isbn').value = data.isbn;
@@ -237,15 +300,12 @@
             document.getElementById('autor').value = data.autor_id;
             document.getElementById('editorial').value = data.editorial_id;
 
-            // 2. Seleccionar Categorías (HU-CAT06): El backend devuelve data.categorias_ids como lista de enteros
             const selectCategoria = document.getElementById('categoria');
             
-            // Deseleccionar todo primero
             Array.from(selectCategoria.options).forEach(option => {
                 option.selected = false;
             });
             
-            // Seleccionar las categorías que vienen del backend
             if (data.categorias_ids && Array.isArray(data.categorias_ids)) {
                 data.categorias_ids.forEach(catId => {
                     const option = selectCategoria.querySelector(`option[value="${catId}"]`);
@@ -264,7 +324,6 @@
         }
     }
 
-    // 🚨 HU-CAT05: Elimina material (llamada a la API segura)
     async function eliminarMaterial(materialId) {
         if (!confirm(`¿Desea eliminar el material ID ${materialId}? La eliminación será bloqueada si hay préstamos activos.`)) return;
 
@@ -288,31 +347,24 @@
         }
     }
 
-    // ------------------------------------------------------------------
-    // FUNCIÓN PRINCIPAL: ENVÍO DE FORMULARIO (CREATE/UPDATE)
-    // ------------------------------------------------------------------
     document.getElementById('catalogacionForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Evita la recarga de la página
+        event.preventDefault();
         
         const id = document.getElementById('editId').value;
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
 
-        // Eliminar 'categoria_id' del objeto JSON si se usa el selector múltiple
         delete data.categoria_id; 
-
-        // 🚨 Obtener MÚLTIPLES CATEGORÍAS (HU-CAT06)
         const select = document.getElementById('categoria');
         const selectedCategories = Array.from(select.options)
-                                    .filter(option => option.selected)
-                                    .map(option => parseInt(option.value));
+                                     .filter(option => option.selected)
+                                     .map(option => parseInt(option.value));
         
-        data.categorias_ids = selectedCategories; // Añadir la lista al objeto JSON
+        data.categorias_ids = selectedCategories;
 
         let url = id ? `${API_EDITAR}/${id}` : API_GUARDAR;
         let method = id ? 'PUT' : 'POST';
 
-        // 🚨 PRUEBA DE CONEXIÓN Y ENVÍO (Resuelve el fallo silencioso)
         try {
             const response = await fetch(url, {
                 method: method,
@@ -325,12 +377,10 @@
             if (response.ok) {
                 mostrarMensaje('success', result.message || 'Operación exitosa!');
                 this.reset();
-                // Limpieza del formulario después de guardar/editar
                 document.getElementById('editId').value = '';
                 document.getElementById('submitBtn').textContent = 'Guardar Material';
-                await cargarDatosIniciales(); // Recarga las listas y la tabla
+                await cargarDatosIniciales();
             } else {
-                // Captura errores de seguridad (401/403) o reglas de negocio (400)
                 mostrarMensaje('error', "Error: " + (result.error || 'Fallo de seguridad (¿Logueado como Bibliotecario?) o de servidor.'));
             }
         } catch (error) {
@@ -339,7 +389,6 @@
         }
     });
 
-    // Función auxiliar para mostrar mensajes
     function mostrarMensaje(type, text) {
         const messageDiv = document.getElementById('message');
         messageDiv.className = `message ${type}`;
@@ -356,11 +405,15 @@
         document.getElementById('editId').value = ''; 
         document.getElementById('submitBtn').textContent = 'Guardar Material'; 
         document.getElementById('message').style.display = 'none'; 
+        
+        const selectCategoria = document.getElementById('categoria');
+        Array.from(selectCategoria.options).forEach(option => {
+            option.selected = false;
+        });
     }
-    // Campo oculto para edición
+    
     document.getElementById('catalogacionForm').insertAdjacentHTML('afterbegin', '<input type="hidden" id="editId" value="">');
 
-    // Iniciar la carga de datos al cargar la página
     window.onload = cargarDatosIniciales;
 </script>
 

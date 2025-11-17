@@ -3,53 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SIGB</title>
+    <title>Acceso al Sistema - SIGB DGAC</title>
     <style>
-        /* Estilos básicos */
+        :root {
+            --dgac-blue: #004d99;
+            --dgac-gold: #ffc107;
+            --bg-light: #f4f7f9;
+        }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e0e9f0 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+        }
+        .login-container { 
+            width: 90%;
+            max-width: 400px; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+        .header { 
+            color: var(--dgac-blue); 
+            margin-bottom: 20px;
+        }
+        .header h1 { 
+            font-size: 24px; 
+            margin-bottom: 5px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            flex-grow: 1;
+            padding: 10px;
+            cursor: pointer;
+            border: none;
+            background-color: #f0f0f0;
+            color: #555;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .tab-button.active {
+            background-color: var(--dgac-blue);
+            color: white;
+            border-bottom: 3px solid var(--dgac-gold);
+        }
+        
+        label { 
+            display: block; 
+            text-align: left;
+            margin: 15px 0 5px;
+            font-weight: bold; 
+            color: #444;
+        }
+        input[type="text"], input[type="password"], input[type="email"] { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #loginBtn { 
+            background-color: var(--dgac-blue); 
+            color: white;
+        }
+        #loginBtn:hover {
+            background-color: #003366;
+        }
+        #registerBtn {
+            background-color: var(--dgac-gold);
+            color: var(--dgac-blue);
+        }
+        #registerBtn:hover {
+            background-color: #e0ac00;
+        }
+
+        .message { padding: 10px; margin-top: 15px; border-radius: 5px; display: none; text-align: left; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Iniciar Sesión 🔒</h1>
-        <form id="loginForm">
-            <label for="rut">RUT:</label>
-            <input type="text" id="rut" name="rut" placeholder="Ingrese su RUT" required>
 
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" name="password" placeholder="Contraseña" required>
-            
-            <button type="submit">Acceder</button>
-        </form>
-        <div id="message" class="message"></div>
+<div class="login-container">
+    <div class="header">
+        <h1>SIGB DGAC</h1>
+        <p>Sistema Integrado de Gestión de Biblioteca</p>
     </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); 
-            const rut = document.getElementById('rut').value;
-            const password = document.getElementById('password').value;
+    <div class="tabs">
+        <button id="tabLogin" class="tab-button active" onclick="showTab('login')">INICIAR SESIÓN</button>
+        <button id="tabRegister" class="tab-button" onclick="showTab('register')">REGISTRARSE</button>
+    </div>
 
-            try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rut, password })
-                });
+    <div id="message" class="message"></div>
 
-                const result = await response.json();
+    <div id="loginFormContainer">
+        <form id="loginForm">
+            <label for="rut">RUT:</label>
+            <input type="text" id="rut" name="rut" placeholder="Ej: 20594886-4 (Sin puntos ni espacios)" required>
 
-                if (response.ok) {
-                    alert(`¡Bienvenido ${result.user}! Rol: ${result.rol}`);
-                    // Redirigir a la página principal después del login
-                    window.location.href = '/catalogacion'; 
-                } else {
-                    alert(result.error || 'Fallo en el inicio de sesión.');
-                }
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" placeholder="Contraseña de al menos 6 caracteres" required>
+            
+            <button type="submit" id="loginBtn">ACCEDER</button>
+        </form>
+    </div>
 
-            } catch (error) {
-                console.error("Error de conexión:", error);
+    <div id="registerFormContainer" style="display: none;">
+        <form id="registerForm">
+            <label for="regNombre">Nombre Completo:</label>
+            <input type="text" id="regNombre" name="nombre" placeholder="Juan Pérez Soto" required>
+            
+            <label for="regRut">RUT:</label>
+            <input type="text" id="regRut" name="rut" placeholder="Ej: 20594886-4 (Incluir guion)" required>
+            
+            <label for="regCorreo">Correo:</label>
+            <input type="email" id="regCorreo" name="correo" placeholder="correo@dominio.cl" required>
+            
+            <label for="regTelefono">Teléfono:</label>
+            <input type="text" id="regTelefono" name="telefono" placeholder="Ej: 912345678" required>
+
+            <label for="regPassword">Contraseña:</label>
+            <input type="password" id="regPassword" name="password" placeholder="Contraseña segura (mínimo 6 caracteres)" required>
+            
+            <button type="submit" id="registerBtn">CREAR CUENTA</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    const API_REGISTRO = '/api/registro/estudiante';
+    const API_LOGIN = '/login'; 
+    
+    function showTab(tabName) {
+        document.getElementById('loginFormContainer').style.display = tabName === 'login' ? 'block' : 'none';
+        document.getElementById('registerFormContainer').style.display = tabName === 'register' ? 'block' : 'none';
+        
+        document.getElementById('tabLogin').classList.toggle('active', tabName === 'login');
+        document.getElementById('tabRegister').classList.toggle('active', tabName === 'register');
+        
+        document.getElementById('message').style.display = 'none';
+    }
+
+    function mostrarMensaje(type, text) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.className = `message ${type}`;
+        messageDiv.textContent = text;
+        messageDiv.style.display = 'block';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch(API_LOGIN, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                window.location.href = result.redirect || '/dashboard';
+            } else {
+                mostrarMensaje('error', result.error || 'Fallo en el inicio de sesión. Verifique RUT y contraseña.');
             }
-        });
-    </script>
-</body>
-</html>
+
+        } catch (error) {
+            console.error("Error crítico de red:", error);
+            mostrarMensaje('error', 'Error de conexión con el servidor. Intente más tarde.');
+        }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        if (data.password.length < 6) {
+             mostrarMensaje('error', 'La contraseña debe tener al menos 6 caracteres.');
+             return;
+        }
+
+        try {
+            const response = await fetch(API_REGISTRO, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                mostrarMensaje('success', result.message || 'Registro exitoso. Inicie sesión.');
+                this.reset();
+                showTab('login');
+            } else {
+                mostrarMensaje('error', result.error || 'Fallo en el registro. El RUT o Correo ya existen.');
+            }
+
+        } catch (error) {
+            console.error("Error crítico de red:", error);
+            mostrarMensaje('error', 'Error de conexión con el servidor.');
+        }
+    });
+    
+    window.onload = () => showTab('login');
+</script>

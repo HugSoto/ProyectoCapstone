@@ -1,7 +1,0 @@
-<?xml version = '1.0' encoding = 'UTF-8'?>
-<LogicalDesign class="oracle.dbtools.crest.model.design.logical.LogicalDesign" name="Logical" id="AB96CF23-8C76-6FBE-F19A-60FEA8D67C3B" mainViewID="D6065234-DCBA-BA28-C7C2-16F08D3B7BD5">
-<createdBy>hugo-</createdBy>
-<createdTime>2025-09-13 03:23:18 UTC</createdTime>
-<ownerDesignName>Modelado BD Biblioteca</ownerDesignName>
-<shouldBeOpen>false</shouldBeOpen>
-</LogicalDesign>

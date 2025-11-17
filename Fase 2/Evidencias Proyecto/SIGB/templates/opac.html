@@ -5,16 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo en Línea (OPAC) - DGAC</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #e9ecef; }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #004d99; border-bottom: 3px solid #007bff; padding-bottom: 10px; margin-bottom: 20px; }
-        .search-controls { display: flex; gap: 15px; margin-bottom: 30px; }
-        .search-controls input, .search-controls select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex-grow: 1; }
-        #resultadosTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        #resultadosTable th, #resultadosTable td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
-        #resultadosTable th { background-color: #007bff; color: white; cursor: pointer; }
-        .disponible { color: green; font-weight: bold; }
-        .prestado { color: red; }
+        :root {
+            --dgac-blue: #004d99;
+            --dgac-gold: #ffc107;
+            --bg-light: #f4f7f9;
+            --danger-color: #dc3545;
+        }
+
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: var(--bg-light); 
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        h1 { 
+            color: var(--dgac-blue); 
+            border-bottom: 3px solid var(--dgac-gold);
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+            font-size: 1.8em;
+        }
+
+        .search-controls { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 30px; 
+        }
+        .search-controls input, .search-controls select { 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            flex-grow: 1; 
+        }
+        .search-controls button {
+            background-color: var(--dgac-blue); 
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .search-controls button:hover {
+            background-color: #003366;
+        }
+
+        #resultadosTable { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        #resultadosTable th, #resultadosTable td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+            font-size: 14px; 
+        }
+        #resultadosTable th { 
+            background-color: var(--dgac-blue); 
+            color: white; 
+            cursor: pointer; 
+        }
+        
+        .disponible { 
+            color: var(--success-color);
+            font-weight: bold; 
+        }
+        .prestado { 
+            color: var(--danger-color);
+            font-weight: bold; 
+        }
+        .acciones button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .acciones button[style*="#007bff"] { 
+            background-color: var(--dgac-blue);
+        }
+        .acciones button[style*="#ff9900"] { 
+            background-color: var(--dgac-gold);
+            color: var(--dgac-blue);
+        }
     </style>
 </head>
 <body>
@@ -27,7 +111,7 @@
         <select id="categoriaFilter" style="flex-basis: 30%;">
             <option value="">Todas las Categorías</option>
             </select>
-        <button onclick="buscarMateriales()" style="background-color: #007bff; color: white;">Buscar</button>
+        <button onclick="buscarMateriales()">Buscar</button>
     </div>
 
     <h2>Resultados de la Búsqueda</h2>
@@ -52,16 +136,29 @@
 </div>
 
 <script>
-    // ******************************************************
-    // LÓGICA JAVASCRIPT: HU-CONS01/02/03 (OPAC COMPLETO)
-    // ******************************************************
-    
     const API_LISTAS = '/api/listas_catalogacion'; 
     const API_BUSQUEDA = '/api/opac/buscar';
-    const API_RESERVAR = '/api/opac/reservar'; // Nueva API de reserva
+    const API_RESERVAR = '/api/opac/reservar';
     const API_DETALLE = '/api/opac/detalle';
 
-    // (Dejar la función cargarCategorias sin cambios)
+    async function cargarCategorias() {
+        try {
+            const response = await fetch(API_LISTAS);
+            const data = await response.json();
+            const selectCategoria = document.getElementById('categoriaFilter');
+            
+            selectCategoria.innerHTML = '<option value="">Todas las Categorías</option>';
+            
+            data.categorias.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id_categoria;
+                option.textContent = cat.nombre_categoria;
+                selectCategoria.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error al cargar categorías para OPAC:", error);
+        }
+    }
 
     async function buscarMateriales() {
         const queryText = document.getElementById('queryText').value;
@@ -72,7 +169,6 @@
         resultadosBody.innerHTML = '';
         loadingMessage.textContent = 'Buscando...';
         
-        // Construir URL con parámetros
         const url = new URL(window.location.origin + API_BUSQUEDA);
         if (queryText) url.searchParams.append('query', queryText);
         if (categoriaId) url.searchParams.append('categoria_id', categoriaId);
@@ -101,13 +197,11 @@
                 if (stockDisponible > 0) {
                     estadoStock = `Disponible (${stockDisponible})`;
                     estadoClase = 'disponible';
-                    // Si está disponible, solo permite ver el detalle
-                    accionesHTML = `<button onclick="mostrarDetalle(${m.id_material})" style="background-color: #007bff;">Ver Detalle</button>`; 
+                    accionesHTML = `<button onclick="mostrarDetalle(${m.id_material})" class="acciones" style="background-color: #007bff; color: white;">Ver Detalle</button>`; 
                 } else {
                     estadoStock = 'Agotado (0)';
                     estadoClase = 'prestado';
-                    // 🚨 CAMBIO CLAVE: Si está agotado, permite reservar (HU-CONS03)
-                    accionesHTML = `<button onclick="registrarReserva(${m.id_material})" style="background-color: #ff9900;">Reservar</button>`;
+                    accionesHTML = `<button onclick="registrarReserva(${m.id_material})" class="acciones" style="background-color: var(--dgac-gold); color: var(--dgac-blue);">Reservar</button>`;
                 }
 
                 row.insertCell(0).textContent = m.titulo;
@@ -129,9 +223,6 @@
         }
     }
     
-    // ------------------------------------------------------------------
-    // FUNCIÓN: REGISTRAR RESERVA (HU-CONS03)
-    // ------------------------------------------------------------------
     async function registrarReserva(materialId) {
         if (!confirm("Este material está agotado. ¿Desea registrar una reserva para ser el próximo en la lista de espera? (Debe estar logueado)")) {
             return;
@@ -146,11 +237,10 @@
 
             const result = await response.json();
 
-            // Usamos alert porque el OPAC no tiene un div de mensaje visible fácil
             if (response.ok) {
                 alert(result.message || 'Reserva registrada con éxito.');
+                buscarMateriales();
             } else {
-                // Captura errores de negocio: "Ya tienes una reserva activa" o "No logueado"
                 alert("Error al reservar: " + (result.error || 'Fallo desconocido. Inicie sesión si no lo ha hecho.'));
             }
 
@@ -160,9 +250,6 @@
         }
     }
     
-    // ------------------------------------------------------------------
-    // FUNCIÓN: MOSTRAR DETALLE (HU-CONS02) - Implementación Real
-    // ------------------------------------------------------------------
     async function mostrarDetalle(materialId) {
         try {
             const response = await fetch(`${API_DETALLE}/${materialId}`);
@@ -191,17 +278,17 @@ Categorías: ${detalle.categorias || 'Sin Clasificar'}
 
 ESTADO DE STOCK: ${stockStatus}
 `;
-            alert(detalleMensaje); // Usa alert o implementa un modal HTML más avanzado
+            alert(detalleMensaje);
 
         } catch (error) {
             console.error("Error al obtener el detalle:", error);
             alert("Error de conexión al obtener la ficha detallada.");
         }
     }
-    // Carga inicial
+
     window.onload = () => {
         cargarCategorias();
-        buscarMateriales(); // Cargar la lista completa al inicio
+        buscarMateriales();
     };
 </script>
 

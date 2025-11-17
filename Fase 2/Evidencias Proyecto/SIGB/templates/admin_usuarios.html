@@ -5,19 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración de Usuarios - SIGB</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #800080; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 30px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
-        th { background-color: #800080; color: white; }
-        button { background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-        .success { color: green; font-weight: bold; }
-        .inactivo { background-color: #f8d7da; color: #721c24; }
-        /* Estilos de formulario y modales (simplificados) */
-        .form-section { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
-        .form-section label { display: block; margin-top: 10px; font-weight: bold; }
-        .form-section input, .form-section select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        :root {
+            --dgac-blue: #004d99;
+            --dgac-gold: #ffc107;
+            --success-color: #28a745;
+            --danger-color: #dc3545; 
+            --bg-light: #f4f7f9;
+        }
+        
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: var(--bg-light); 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        h1 { 
+            color: var(--dgac-blue); 
+            border-bottom: 3px solid var(--dgac-gold); 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+            font-size: 1.8em;
+        }
+        h2 {
+            color: #333; 
+            margin-top: 30px;
+            border-left: 5px solid var(--dgac-blue);
+            padding-left: 10px;
+            font-size: 1.4em;
+        }
+
+        .form-section { 
+            border: 1px solid #ddd; 
+            padding: 20px; 
+            margin-bottom: 30px; 
+            border-radius: 5px; 
+            background-color: #ffffff;
+        }
+        .form-section label { 
+            display: block; 
+            margin-top: 10px; 
+            font-weight: bold; 
+        }
+        .form-section input, .form-section select { 
+            width: 100%; 
+            padding: 8px; 
+            margin-top: 5px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        th, td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+            font-size: 13px; 
+        }
+        th { 
+            background-color: var(--dgac-blue);
+            color: white; 
+            font-weight: bold;
+        }
+        .inactivo { 
+            background-color: #ffe0e0;
+            color: var(--danger-color); 
+        }
+
+        button { 
+            padding: 8px 12px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin-right: 5px; 
+            transition: background-color 0.2s;
+            font-size: 13px;
+        }
+        #submitBtn { 
+            background-color: var(--success-color); 
+            color: white; 
+        }
+        .btn-cancel {
+            background-color: var(--dgac-gold);
+            color: var(--dgac-blue);
+        }
+        .btn-edit {
+            background-color: #007bff;
+            color: white;
+        }
+        .acciones-bloqueadas {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -58,8 +150,12 @@
                     </select>
                 </div>
             </div>
-            <button type="submit" id="submitBtn" style="background-color: #28a745;">Registrar</button>
-            <button type="button" onclick="resetForm()" style="background-color: #ffc107;">Cancelar Edición</button>
+            <div style="flex: 1;" id="password-field">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+            </div>
+            <button type="submit" id="submitBtn">Registrar</button>
+            <button type="button" onclick="resetForm()" class="btn-cancel">Cancelar Edición</button>
         </form>
     </div>
 
@@ -85,17 +181,14 @@
 
 <script>
     const API_LISTAR = '/api/admin/usuarios';
-    const API_REGISTRAR = '/api/usuario/registrar'; // T06
+    const API_REGISTRAR = '/api/usuario/registrar';
     const API_EDITAR = '/api/admin/usuario/editar'; 
     const API_BLOQUEAR = '/api/admin/usuario/bloquear';
-    const API_OBTEN_USUARIO = '/api/admin/usuario/obtener';
     const API_REACTIVAR = '/api/admin/usuario/reactivar';
-    // ------------------------------------------------------------------
-    // NUEVA FUNCIÓN: OBTENER UN ÚNICO USUARIO POR ID (READ Específico)
-    // ------------------------------------------------------------------
+    const API_OBTEN_USUARIO = '/api/admin/usuario/obtener';
+    
     async function obtenerUsuarioPorId(id) {
         try {
-            // 🚨 FALTA LA RUTA DE BACKEND: Asumimos la ruta /api/admin/usuario/obtener/<id>
             const response = await fetch(`${API_OBTEN_USUARIO}/${id}`); 
             if (!response.ok) throw new Error("Fallo al obtener datos.");
             return await response.json();
@@ -105,27 +198,35 @@
         }
     }
 
-    // Función para listar usuarios (READ)
-    async function listarUsuarios() {
-        const usuariosBody = document.getElementById('usuariosBody');
-        usuariosBody.innerHTML = '';
-        document.getElementById('loadingList').style.display = 'block';
+async function listarUsuarios() {
+    const usuariosBody = document.getElementById('usuariosBody');
+    usuariosBody.innerHTML = '';
+    document.getElementById('loadingList').style.display = 'block';
 
-        try {
-            const response = await fetch(API_LISTAR);
-            // El API ya tiene el decorador @admin_required. Si falla aquí, es por seguridad (401/403).
-            if (!response.ok) {
+    try {
+        const response = await fetch(API_LISTAR);
+        
+        if (!response.ok) {
+            let errorMessage = `Fallo de servidor (${response.status}).`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } catch (e) {
                 if (response.status === 403) {
-                    usuariosBody.innerHTML = '<tr><td colspan="7">🚫 Acceso Denegado. Solo los Administradores pueden ver esta tabla.</td></tr>';
-                } else {
-                    throw new Error(`Error HTTP: ${response.status}`);
+                    errorMessage = 'Acceso Denegado. Se requiere ser Administrador.';
+                } else if (response.status === 401) {
+                    errorMessage = 'No Autorizado. Inicie sesión.';
                 }
-                document.getElementById('loadingList').style.display = 'none';
-                return;
             }
             
-            const usuarios = await response.json();
-            document.getElementById('loadingList').style.display = 'none';
+            document.getElementById('loadingList').textContent = errorMessage;
+            document.getElementById('loadingList').style.display = 'block';
+            usuariosBody.innerHTML = '<tr><td colspan="7">Error al cargar usuarios.</td></tr>';
+            return;
+        }
+        
+        const usuarios = await response.json();
+        document.getElementById('loadingList').style.display = 'none';
 
             usuarios.forEach(user => {
                 const row = usuariosBody.insertRow();
@@ -144,23 +245,20 @@
 
                 const actionsCell = row.insertCell(6);
                 actionsCell.innerHTML = `
-                    <button onclick="iniciarEdicion(${user.id_usuario})" style="background-color: #007bff;">Editar</button>
+                    <button onclick="iniciarEdicion(${user.id_usuario})" class="btn-edit">Editar</button>
                     ${user.estado_activo 
-                        ? `<button onclick="bloquearUsuario(${user.id_usuario})" style="background-color: #dc3545;">Bloquear</button>` 
-                        : `<button onclick="reactivarUsuario(${user.id_usuario})" style="background-color: #28a745;">Activar</button>` 
+                        ? `<button onclick="bloquearUsuario(${user.id_usuario})" style="background-color: var(--danger-color);">Bloquear</button>` 
+                        : `<button onclick="reactivarUsuario(${user.id_usuario})" style="background-color: var(--success-color);">Activar</button>` 
                     }
                 `;
             });
 
         } catch (error) {
             console.error("Error al listar usuarios:", error);
-            document.getElementById('loadingList').textContent = 'Error: No se pudo cargar el listado de usuarios.';
+            document.getElementById('loadingList').textContent = 'Error: Fallo crítico de red o JSON inválido.';
         }
     }
-    
-    // ------------------------------------------------------------------
-    // FUNCIÓN PARA INICIAR LA EDICIÓN (HU-ADMIN02)
-    // ------------------------------------------------------------------
+
     async function iniciarEdicion(id) {
         const user = await obtenerUsuarioPorId(id);
         if (!user) {
@@ -168,62 +266,56 @@
             return;
         }
         
-        // Llenar el formulario con los datos obtenidos
         document.getElementById('nombre').value = user.nombre;
-        document.getElementById('rut').value = user.rut; // RUT no se suele editar
+        document.getElementById('rut').value = user.rut;
         document.getElementById('correo').value = user.correo;
         document.getElementById('telefono').value = user.telefono;
-        document.getElementById('rol').value = user.rol; // Cargar rol actual
+        document.getElementById('rol').value = user.rol;
         
-        // Configurar el formulario para la operación de UPDATE
+        document.getElementById('password-field').style.display = 'none';
+
         document.getElementById('editId').value = id;
         document.getElementById('submitBtn').textContent = 'Guardar Cambios';
         
         alert(`Modo Edición iniciado para: ${user.nombre}`);
     }
 
-    // Función para bloquear la cuenta (DELETE Lógico - HU-ADMIN02)
-    // Función para bloquear la cuenta (DELETE Lógico - HU-ADMIN02)
     async function bloquearUsuario(id) {
-    if (!confirm("¿Está seguro de que desea bloquear/desactivar esta cuenta?")) return;
-    
-    try {
-        const response = await fetch(`${API_BLOQUEAR}/${id}`, {
-            method: 'PUT',
-            // 🚨 SOLUCIÓN FINAL: Usamos un cuerpo vacío para evitar que Flask falle.
-            body: JSON.stringify({}) // Enviamos un objeto JSON vacío
-        });
+        if (!confirm("¿Está seguro de que desea bloquear/desactivar esta cuenta?")) return;
+        
+        try {
+            const response = await fetch(`${API_BLOQUEAR}/${id}`, { method: 'PUT', body: JSON.stringify({}) }); 
+            const result = await response.json().catch(() => ({error: "Respuesta del servidor inesperada."}));
 
-        if (response.ok) {
-            alert("Cuenta bloqueada con éxito.");
-            listarUsuarios(); 
-        } else {
-            const result = await response.json().catch(() => ({error: "Error del servidor (No JSON)."}));
-            alert(result.error || "Fallo al bloquear la cuenta.");
+            if (response.ok) {
+                alert("Cuenta bloqueada con éxito.");
+                listarUsuarios(); 
+            } else {
+                alert(result.error || "Fallo al bloquear la cuenta.");
+            }
+        } catch (error) {
+            console.error("Error de conexión al bloquear:", error);
         }
-    } catch (error) {
-        console.error("Error de conexión al bloquear:", error);
     }
-}
 
     async function reactivarUsuario(id) {
-    if (!confirm("¿Confirma que desea reactivar la cuenta?")) return;
-    
-    try {
-        const response = await fetch(`${API_REACTIVAR}/${id}`, { method: 'PUT' });
-
-        if (response.ok) {
-            alert("Cuenta reactivada con éxito.");
-            listarUsuarios(); 
-        } else {
+        if (!confirm("¿Confirma que desea reactivar la cuenta?")) return;
+        
+        try {
+            const response = await fetch(`${API_REACTIVAR}/${id}`, { method: 'PUT' });
             const result = await response.json().catch(() => ({error: "Fallo de servidor."}));
-            alert(result.error || "Fallo al reactivar la cuenta.");
+
+            if (response.ok) {
+                alert("Cuenta reactivada con éxito.");
+                listarUsuarios(); 
+            } else {
+                alert(result.error || "Fallo al reactivar la cuenta.");
+            }
+        } catch (error) {
+            console.error("Error de conexión al reactivar:", error);
         }
-    } catch (error) {
-        console.error("Error de conexión al reactivar:", error);
     }
-}
-    // Función para manejar el envío del formulario (CREATE/UPDATE)
+
     document.getElementById('registrarUsuarioForm').addEventListener('submit', async function(event) {
         event.preventDefault(); 
         const id = document.getElementById('editId').value;
@@ -233,8 +325,14 @@
         let url = id ? `${API_EDITAR}/${id}` : API_REGISTRAR;
         let method = id ? 'PUT' : 'POST';
 
-        // NOTE: La interfaz actual no tiene campo de contraseña. 
-        // Para UPDATE (PUT), la contraseña no se envía. Para CREATE (POST), la API registrar_usuario no la requiere.
+        if (method === 'POST' && (!data.password || data.password.length < 6)) {
+             alert("Error: La contraseña es obligatoria y debe tener al menos 6 caracteres.");
+             return;
+        }
+
+        if (method === 'PUT') {
+             delete data.password;
+        }
 
         try {
             const response = await fetch(url, {
@@ -248,6 +346,7 @@
             if (response.ok) {
                 alert(result.message || 'Operación exitosa.');
                 resetForm();
+                document.getElementById('password-field').style.display = 'block'; 
                 listarUsuarios();
             } else {
                 alert(result.error || 'Error desconocido en la operación.');
@@ -261,6 +360,7 @@
         document.getElementById('registrarUsuarioForm').reset();
         document.getElementById('editId').value = '';
         document.getElementById('submitBtn').textContent = 'Registrar';
+        document.getElementById('password-field').style.display = 'block'; 
     }
 
     window.onload = listarUsuarios;
