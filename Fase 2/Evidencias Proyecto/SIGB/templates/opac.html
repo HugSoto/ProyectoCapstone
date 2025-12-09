@@ -2,102 +2,156 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo en Línea (OPAC) - DGAC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Catálogo en Línea (OPAC) - DGAC</title>
     <style>
         :root {
             --dgac-blue: #004d99;
             --dgac-gold: #ffc107;
             --bg-light: #f4f7f9;
             --danger-color: #dc3545;
+            --success-color: #28a745;
         }
 
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 20px;
             background-color: var(--bg-light); 
         }
+
         .container { 
             max-width: 1400px; 
             margin: auto; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 10px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
         }
         
         h1 { 
             color: var(--dgac-blue); 
             border-bottom: 3px solid var(--dgac-gold);
             padding-bottom: 10px; 
-            margin-bottom: 20px; 
-            font-size: 1.8em;
+            margin-bottom: 30px; 
+            text-align: center;
         }
 
         .search-controls { 
             display: flex; 
             gap: 15px; 
-            margin-bottom: 30px; 
+            margin-bottom: 40px; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
         }
+        
         .search-controls input, .search-controls select { 
-            padding: 10px; 
+            padding: 12px; 
             border: 1px solid #ccc; 
             border-radius: 5px; 
-            flex-grow: 1; 
+            font-size: 16px;
         }
+
+        .search-controls input { flex: 2; min-width: 200px; }
+        .search-controls select { flex: 1; min-width: 150px; }
+        
         .search-controls button {
             background-color: var(--dgac-blue); 
             color: white;
-            padding: 10px 20px;
+            padding: 12px 30px;
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
+            flex: 0 0 auto;
         }
-        .search-controls button:hover {
-            background-color: #003366;
+        .search-controls button:hover { background-color: #003366; }
+
+        .resultados-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
-        #resultadosTable { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 20px; 
+        .material-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--dgac-blue);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        #resultadosTable th, #resultadosTable td { 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            text-align: left; 
-            font-size: 14px; 
+
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
         }
-        #resultadosTable th { 
-            background-color: var(--dgac-blue); 
-            color: white; 
-            cursor: pointer; 
+
+        .card-header h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2em;
+            line-height: 1.4;
         }
-        
-        .disponible { 
-            color: var(--success-color);
-            font-weight: bold; 
+
+        .card-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
         }
-        .prestado { 
-            color: var(--danger-color);
-            font-weight: bold; 
+
+        .card-meta p { margin: 5px 0; }
+        .card-meta strong { color: var(--dgac-blue); }
+
+        .card-badges {
+            margin-bottom: 15px;
         }
-        .acciones button {
-            padding: 6px 12px;
-            border: none;
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #e9ecef;
             border-radius: 4px;
+            font-size: 0.8em;
+            color: #495057;
+            margin-right: 5px;
+        }
+
+        .stock-indicator {
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 15px;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .text-success { color: var(--success-color); }
+        .text-danger { color: var(--danger-color); }
+
+        .card-actions button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 13px;
+            margin-top: auto;
         }
-        .acciones button[style*="#007bff"] { 
-            background-color: var(--dgac-blue);
-        }
-        .acciones button[style*="#ff9900"] { 
-            background-color: var(--dgac-gold);
-            color: var(--dgac-blue);
+
+        .btn-detalle { background-color: var(--dgac-blue); color: white; }
+        .btn-reserva { background-color: var(--dgac-gold); color: var(--dgac-blue); }
+
+        @media (max-width: 768px) {
+            .search-controls {
+                flex-direction: column;
+            }
+            .search-controls input, .search-controls select, .search-controls button {
+                width: 100%;
+            }
+            h1 { font-size: 1.5em; }
         }
     </style>
 </head>
@@ -107,31 +161,18 @@
     <h1>Catálogo en Línea (OPAC) - Búsqueda de Acervo 🌐</h1>
     
     <div class="search-controls">
-        <input type="text" id="queryText" placeholder="Buscar por Título o Autor..." style="flex-basis: 60%;">
-        <select id="categoriaFilter" style="flex-basis: 30%;">
+        <input type="text" id="queryText" placeholder="Buscar por Título, Autor o ISBN...">
+        <select id="categoriaFilter">
             <option value="">Todas las Categorías</option>
-            </select>
-        <button onclick="buscarMateriales()">Buscar</button>
+        </select>
+        <button onclick="buscarMateriales()">🔍 Buscar</button>
     </div>
 
-    <h2>Resultados de la Búsqueda</h2>
-    <p id="loadingMessage">Cargando catálogo...</p>
+    <h2 style="margin-bottom: 20px; color: #555;">Resultados de la Búsqueda</h2>
+    <p id="loadingMessage" style="text-align: center; color: #666;">Cargando catálogo...</p>
     
-    <table id="resultadosTable">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Editorial</th>
-                <th>Categorías</th>
-                <th>Año</th>
-                <th>Estado Stock</th>
-                <th>Ver Detalle</th>
-            </tr>
-        </thead>
-        <tbody id="resultadosBody">
-        </tbody>
-    </table>
+    <div id="resultadosGrid" class="resultados-grid">
+        </div>
 
 </div>
 
@@ -156,18 +197,19 @@
                 selectCategoria.appendChild(option);
             });
         } catch (error) {
-            console.error("Error al cargar categorías para OPAC:", error);
+            console.error("Error al cargar categorías:", error);
         }
     }
 
     async function buscarMateriales() {
         const queryText = document.getElementById('queryText').value;
         const categoriaId = document.getElementById('categoriaFilter').value;
-        const resultadosBody = document.getElementById('resultadosBody');
+        const gridContainer = document.getElementById('resultadosGrid');
         const loadingMessage = document.getElementById('loadingMessage');
         
-        resultadosBody.innerHTML = '';
+        gridContainer.innerHTML = '';
         loadingMessage.textContent = 'Buscando...';
+        loadingMessage.style.display = 'block';
         
         const url = new URL(window.location.origin + API_BUSQUEDA);
         if (queryText) url.searchParams.append('query', queryText);
@@ -179,111 +221,81 @@
             
             const materiales = await response.json();
             
-            loadingMessage.textContent = ''; 
+            loadingMessage.style.display = 'none';
 
             if (materiales.length === 0) {
-                resultadosBody.innerHTML = '<tr><td colspan="7">No se encontraron resultados para su búsqueda.</td></tr>';
+                gridContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No se encontraron resultados.</p>';
                 return;
             }
 
             materiales.forEach(m => {
-                const row = resultadosBody.insertRow();
+                const card = document.createElement('div');
+                card.className = 'material-card';
+                
                 const stockDisponible = m.ejemplares_disponibles;
-
-                let estadoStock = '';
-                let estadoClase = '';
-                let accionesHTML = '';
-
-                if (stockDisponible > 0) {
-                    estadoStock = `Disponible (${stockDisponible})`;
-                    estadoClase = 'disponible';
-                    accionesHTML = `<button onclick="mostrarDetalle(${m.id_material})" class="acciones" style="background-color: #007bff; color: white;">Ver Detalle</button>`; 
-                } else {
-                    estadoStock = 'Agotado (0)';
-                    estadoClase = 'prestado';
-                    accionesHTML = `<button onclick="registrarReserva(${m.id_material})" class="acciones" style="background-color: var(--dgac-gold); color: var(--dgac-blue);">Reservar</button>`;
-                }
-
-                row.insertCell(0).textContent = m.titulo;
-                row.insertCell(1).textContent = m.nombre_autor;
-                row.insertCell(2).textContent = m.nombre_editorial;
-                row.insertCell(3).textContent = m.categorias || 'N/A';
-                row.insertCell(4).textContent = m.anio_publicacion;
+                const esDisponible = stockDisponible > 0;
                 
-                const stockCell = row.insertCell(5);
-                stockCell.textContent = estadoStock;
-                stockCell.classList.add(estadoClase);
+                const estadoHTML = esDisponible 
+                    ? `<div class="stock-indicator text-success">✅ DISPONIBLE (${stockDisponible})</div>`
+                    : `<div class="stock-indicator text-danger">❌ AGOTADO (0)</div>`;
+
+                const botonHTML = esDisponible
+                    ? `<button onclick="mostrarDetalle(${m.id_material})" class="btn-detalle">Ver Detalle</button>`
+                    : `<button onclick="registrarReserva(${m.id_material})" class="btn-reserva">📅 Reservar</button>`;
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>${m.titulo}</h3>
+                    </div>
+                    <div class="card-meta">
+                        <p><strong>Autor:</strong> ${m.nombre_autor}</p>
+                        <p><strong>Editorial:</strong> ${m.nombre_editorial}</p>
+                        <p><strong>Año:</strong> ${m.anio_publicacion}</p>
+                    </div>
+                    <div class="card-badges">
+                        <span class="badge">${m.categorias || 'General'}</span>
+                    </div>
+                    ${estadoHTML}
+                    <div class="card-actions">
+                        ${botonHTML}
+                    </div>
+                `;
                 
-                row.insertCell(6).innerHTML = accionesHTML;
+                gridContainer.appendChild(card);
             });
 
         } catch (error) {
-            console.error("Error en la búsqueda:", error);
-            loadingMessage.textContent = 'Error al cargar los resultados del catálogo.';
+            console.error("Error:", error);
+            loadingMessage.textContent = 'Error al cargar el catálogo.';
         }
     }
     
     async function registrarReserva(materialId) {
-        if (!confirm("Este material está agotado. ¿Desea registrar una reserva para ser el próximo en la lista de espera? (Debe estar logueado)")) {
-            return;
-        }
-
+        if (!confirm("Este material está agotado. ¿Desea reservar? (Requiere login)")) return;
         try {
             const response = await fetch(API_RESERVAR, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ material_id: materialId })
             });
-
             const result = await response.json();
-
             if (response.ok) {
-                alert(result.message || 'Reserva registrada con éxito.');
+                alert(result.message);
                 buscarMateriales();
             } else {
-                alert("Error al reservar: " + (result.error || 'Fallo desconocido. Inicie sesión si no lo ha hecho.'));
+                alert("Error: " + (result.error || 'Fallo desconocido.'));
             }
-
-        } catch (error) {
-            console.error("Error de conexión al reservar:", error);
-            alert("Error de conexión con el servidor.");
-        }
+        } catch (e) { alert("Error de conexión."); }
     }
     
     async function mostrarDetalle(materialId) {
         try {
             const response = await fetch(`${API_DETALLE}/${materialId}`);
+            if (!response.ok) return alert("Error al obtener detalle.");
+            const d = await response.json();
             
-            if (!response.ok) {
-                alert("Error: No se pudo obtener el detalle del material.");
-                return;
-            }
-            
-            const detalle = await response.json();
-            
-            const stockStatus = detalle.ejemplares_disponibles > 0 
-                ? `DISPONIBLE (${detalle.ejemplares_disponibles} de ${detalle.ejemplares_totales})`
-                : `AGOTADO (0 de ${detalle.ejemplares_totales})`;
-            
-            const detalleMensaje = `
---- FICHA DE DETALLE ---
-
-Título: ${detalle.titulo}
-Autor: ${detalle.nombre_autor}
-Editorial: ${detalle.nombre_editorial}
-ISBN: ${detalle.isbn}
-Año: ${detalle.anio_publicacion}
-
-Categorías: ${detalle.categorias || 'Sin Clasificar'}
-
-ESTADO DE STOCK: ${stockStatus}
-`;
-            alert(detalleMensaje);
-
-        } catch (error) {
-            console.error("Error al obtener el detalle:", error);
-            alert("Error de conexión al obtener la ficha detallada.");
-        }
+            alert(`--- FICHA TÉCNICA ---\n\nTítulo: ${d.titulo}\nAutor: ${d.nombre_autor}\nISBN: ${d.isbn}\nCategorías: ${d.categorias}\n\nSTOCK: ${d.ejemplares_disponibles}/${d.ejemplares_totales}`);
+        } catch (e) { alert("Error de conexión."); }
     }
 
     window.onload = () => {

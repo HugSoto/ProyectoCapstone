@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo de Circulación - SIGB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Módulo de Circulación - SIGB</title>
     <style>
         :root {
             --dgac-blue: #004d99;
@@ -14,11 +13,12 @@
         }
 
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 20px;
             background-color: var(--bg-light); 
         }
+        
         .container { 
             max-width: 1400px; 
             margin: auto; 
@@ -35,112 +35,156 @@
             margin-top: 0; 
             font-size: 1.8em;
         }
+        
         h2 { 
             color: #333; 
-            margin-top: 30px; 
+            margin-top: 40px; 
             border-left: 5px solid var(--dgac-blue);
-            padding-left: 10px;
+            padding-left: 15px;
             font-size: 1.4em;
         }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .form-group { flex: 1; }
 
         label { 
             display: block; 
             margin: 10px 0 5px; 
-            font-weight: bold; 
+            font-weight: 600; 
+            color: #555;
         }
+        
         input[type="text"], input[type="number"], input[type="date"] { 
             width: 100%; 
-            padding: 10px; 
-            margin-bottom: 20px; 
+            padding: 12px; 
+            margin-bottom: 10px; 
             border: 1px solid #ccc; 
-            border-radius: 4px; 
+            border-radius: 6px; 
             box-sizing: border-box; 
+            font-size: 16px;
         }
         
         button[type="submit"] {
             background-color: var(--success-color); 
             color: white; 
-            padding: 10px 15px; 
+            padding: 12px 25px; 
             border: none; 
-            border-radius: 4px; 
+            border-radius: 6px; 
             cursor: pointer; 
             font-size: 16px; 
-            margin-right: 10px;
+            font-weight: bold;
             transition: background-color 0.2s;
+            width: auto;
         }
-        button[type="submit"]:hover { 
-            background-color: #1e7e34; 
+        button[type="submit"]:hover { background-color: #1e7e34; }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         #prestamosTable { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-top: 20px; 
-            font-size: 13px;
+            font-size: 14px;
+            min-width: 800px;
         }
+        
         #prestamosTable th, #prestamosTable td { 
-            padding: 12px; 
-            border: 1px solid #ddd; 
+            padding: 15px; 
+            border-bottom: 1px solid #eee; 
             text-align: left; 
         }
+        
         #prestamosTable th { 
             background-color: var(--dgac-blue); 
             color: white; 
+            font-weight: 600;
+            white-space: nowrap; /* Evita que los títulos se partan */
         }
         
         .vencido { 
-            background-color: #ffe0e0;
+            background-color: #fff5f5;
             color: var(--danger-color); 
             font-weight: bold; 
         }
-        .acciones button { 
+        
+        .btn-devolver { 
             background-color: var(--danger-color);
-            padding: 6px 12px; 
+            padding: 8px 15px; 
             color: white; 
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .message { padding: 15px; margin-top: 20px; border-radius: 6px; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            
+            .form-row { flex-direction: column; gap: 0; }
+            
+            button[type="submit"] { width: 100%; }
+            
+            h1 { font-size: 1.5em; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Módulo 2: Circulación de Material 🔄</h1>
-    <p>Gestión de préstamos y devoluciones de la biblioteca de la DGAC.</p>
+    <h1>Módulo 2: Circulación 🔄</h1>
+    <p style="color:#666;">Gestión operativa de préstamos y devoluciones.</p>
     
     <h2>1. Iniciar Nuevo Préstamo</h2>
     <form id="prestamoForm">
-        <div style="display: flex; gap: 20px;">
-            <div style="flex: 1;">
-                <label for="rut_usuario">RUT del Usuario (Estudiante/Bibliotecario):</label>
-                <input type="text" id="rut_usuario" name="rut_usuario" placeholder="Ej: 20594886-4 (Incluir guion)" required>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="rut_usuario">RUT del Usuario:</label>
+                <input type="text" id="rut_usuario" name="rut_usuario" placeholder="Ej: 12345678-9" required>
             </div>
-            <div style="flex: 1;">
-                <label for="material_id">ID del Material a Prestar (Desde Inventario):</label>
-                <input type="number" id="material_id" name="material_id" placeholder="ID del libro (Ej: 1)" required>
+            <div class="form-group">
+                <label for="material_id">ID del Material (Folio):</label>
+                <input type="number" id="material_id" name="material_id" placeholder="ID del libro" required>
             </div>
         </div>
         
-        <button type="submit">Registrar Préstamo</button>
+        <button type="submit">📦 Registrar Préstamo</button>
     </form>
+    
     <div id="message" class="message"></div>
 
-    <h2 id="lista-titulo">2. Préstamos Activos y Pendientes de Devolución</h2>
-    <p id="loading-list">Cargando listado de préstamos...</p>
+    <h2 id="lista-titulo">2. Préstamos Activos</h2>
+    <p id="loading-list" style="color:#666; font-style:italic;">Cargando listado...</p>
     
-    <table id="prestamosTable">
-        <thead>
-            <tr>
-                <th>ID Préstamo</th>
-                <th>Material (Título)</th>
-                <th>Usuario (RUT)</th>
-                <th>Fecha Préstamo</th>
-                <th>Fecha Devolución Estimada</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="prestamosBody">
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="prestamosTable">
+            <thead>
+                <tr>
+                    <th>Folio</th>
+                    <th>Material (Título)</th>
+                    <th>Usuario (RUT)</th>
+                    <th>F. Préstamo</th>
+                    <th>F. Devolución</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="prestamosBody">
+                </tbody>
+        </table>
+    </div>
 
 </div>
 
@@ -155,34 +199,27 @@
 
     document.getElementById('prestamoForm').addEventListener('submit', async function(event) {
         event.preventDefault(); 
-
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
-
         data.material_id = parseInt(data.material_id);
 
         try {
             const response = await fetch(API_REGISTRAR_PRESTAMO, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
             const result = await response.json();
 
             if (response.ok) {
-                mostrarMensaje('success', result.message || 'Préstamo registrado con éxito.');
+                mostrarMensaje('success', result.message || 'Préstamo registrado.');
                 this.reset();
                 await listarPrestamosActivos();
             } else {
-                mostrarMensaje('error', result.error || 'Error desconocido al registrar el préstamo.');
+                mostrarMensaje('error', result.error || 'Error al registrar.');
             }
-
         } catch (error) {
-            console.error("Error en el envío del formulario de préstamo:", error);
-            mostrarMensaje('error', 'Error de conexión con el servidor. Verifique Flask.');
+            mostrarMensaje('error', 'Error de conexión.');
         }
     });
 
@@ -195,12 +232,7 @@
         try {
             const response = await fetch(API_LISTAR_PRESTAMOS);
             if (!response.ok) {
-                const status = response.status;
-                if (status === 403 || status === 401) {
-                    loadingList.textContent = '🚫 Acceso denegado. Inicie sesión como Bibliotecario.';
-                } else {
-                    throw new Error(`Error HTTP: ${status}`);
-                }
+                loadingList.textContent = 'Error: No autorizado o fallo de red.';
                 return;
             }
             const prestamos = await response.json();
@@ -208,7 +240,7 @@
             loadingList.style.display = 'none'; 
 
             if (prestamos.length === 0) {
-                prestamosBody.innerHTML = '<tr><td colspan="7">No hay préstamos activos.</td></tr>';
+                prestamosBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No hay préstamos activos.</td></tr>';
                 return;
             }
 
@@ -222,65 +254,53 @@
                 const row = prestamosBody.insertRow();
                 const vencido = isVencido(p.fecha_devolucion);
 
-                if (vencido) {
-                    row.classList.add('vencido');
-                }
+                if (vencido) row.classList.add('vencido');
 
-                row.insertCell(0).textContent = p.id_prestamo;
+                row.insertCell(0).textContent = "#" + p.id_prestamo;
                 row.insertCell(1).textContent = p.titulo_material; 
                 row.insertCell(2).textContent = p.rut_usuario; 
                 row.insertCell(3).textContent = p.fecha_prestamo;
                 row.insertCell(4).textContent = p.fecha_devolucion;
-                row.insertCell(5).textContent = vencido ? 'VENCIDO' : p.estado_prestamo;
+                
+                const estadoCell = row.insertCell(5);
+                if(vencido) {
+                    estadoCell.innerHTML = '<span style="background:red; color:white; padding:3px 6px; border-radius:4px; font-size:12px;">VENCIDO</span>';
+                } else {
+                    estadoCell.textContent = 'Activo';
+                }
 
                 const actionsCell = row.insertCell(6);
-                actionsCell.classList.add('acciones');
-                actionsCell.innerHTML = `<button onclick="registrarDevolucion(${p.id_prestamo})" style="background-color: var(--danger-color);">Devolver</button>`; 
+                actionsCell.innerHTML = `<button class="btn-devolver" onclick="registrarDevolucion(${p.id_prestamo})">Devolver</button>`; 
             });
 
         } catch (error) {
-            console.error("Error al listar préstamos:", error);
-            loadingList.textContent = 'Error: No se pudo cargar el listado de préstamos.';
-            loadingList.style.display = 'block';
+            loadingList.textContent = 'Error al cargar lista.';
         }
     }
 
     async function registrarDevolucion(id_prestamo) {
-        if (!confirm(`¿Confirma que desea registrar la devolución del Préstamo ID: ${id_prestamo}? Esto liberará el stock.`)) {
-            return;
-        }
+        if (!confirm(`¿Registrar devolución del Préstamo #${id_prestamo}?`)) return;
 
         try {
             const response = await fetch(API_REGISTRAR_DEVOLUCION, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_prestamo: id_prestamo })
             });
-
             const result = await response.json();
 
             if (response.ok) {
-                if (result.multa && result.multa > 0) {
-                    const multaFormateada = result.multa.toLocaleString('es-CL');
-                    mostrarMensaje(
-                        'error', 
-                        `¡DEVOLUCIÓN TARDÍA! Se generó una multa de $${multaFormateada} por ${result.dias_retraso} días de retraso.`
-                    );
+                if (result.multa > 0) {
+                    mostrarMensaje('error', `⚠️ DEVOLUCIÓN CON MORA. Multa: $${result.multa}`);
                 } else {
-                    mostrarMensaje('success', result.message || 'Devolución registrada. El material ha sido liberado.');
+                    mostrarMensaje('success', 'Devolución exitosa.');
                 }
-                
                 await listarPrestamosActivos();
-                
             } else {
-                mostrarMensaje('error', result.error || 'Error al registrar la devolución. Verifique el estado.');
+                mostrarMensaje('error', result.error);
             }
-
         } catch (error) {
-            console.error("Error al registrar la devolución:", error);
-            mostrarMensaje('error', 'Error de conexión con el servidor.');
+            mostrarMensaje('error', 'Error de conexión.');
         }
     }
 
@@ -289,10 +309,7 @@
         messageDiv.className = `message ${type}`;
         messageDiv.textContent = text;
         messageDiv.style.display = 'block';
-        
-        setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 5000);
+        setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
     }
 
     window.onload = cargarDatosIniciales;

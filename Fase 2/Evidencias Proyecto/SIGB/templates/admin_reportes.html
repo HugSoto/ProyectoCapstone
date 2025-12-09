@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportes de Gestión - SIGB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Reportes de Gestión - SIGB</title>
     <style>
         :root {
             --dgac-blue: #004d99; 
@@ -13,7 +12,7 @@
         }
         
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 20px;
             background-color: var(--bg-light); 
@@ -21,10 +20,6 @@
         .container { 
             max-width: 1400px; 
             margin: auto; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
         }
         
         h1 { 
@@ -32,50 +27,80 @@
             border-bottom: 3px solid var(--dgac-gold); 
             padding-bottom: 10px; 
             margin-top: 0; 
+            margin-bottom: 30px;
         }
+
+        .reporte-section { 
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 40px; 
+        }
+
         h2 { 
             color: #333; 
-            margin-top: 40px; 
+            margin-top: 0; 
             border-left: 5px solid var(--dgac-blue); 
-            padding-left: 10px; 
-            font-size: 1.5em;
+            padding-left: 15px; 
+            font-size: 1.4em;
         }
-        .reporte-section { margin-bottom: 50px; }
         
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-top: 15px; 
-            font-size: 14px;
+            min-width: 700px;
         }
         th, td { 
             padding: 12px; 
-            border: 1px solid #ddd; 
+            border-bottom: 1px solid #eee; 
             text-align: left; 
+            font-size: 14px;
         }
         th { 
             background-color: var(--dgac-blue); 
             color: white; 
             font-weight: bold;
+            white-space: nowrap;
         }
         tr:nth-child(even) { 
             background-color: #f9f9f9;
         }
         
         .mora-high { 
-            background-color: #ffe0e0; 
+            background-color: #fff5f5 !important; 
             color: var(--mora-high); 
             font-weight: bold; 
         }
+        
         .loading-message, .error-message { 
             text-align: center; 
-            margin-top: 20px; 
-            padding: 10px;
+            margin: 20px 0; 
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            color: #666;
+            font-style: italic;
         }
         .error-message { 
             background-color: #f8d7da; 
             color: #721c24; 
             border: 1px solid #f5c6cb;
+            font-style: normal;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .reporte-section { padding: 15px; }
+            h1 { font-size: 1.6em; }
+            h2 { font-size: 1.2em; }
         }
     </style>
 </head>
@@ -83,46 +108,50 @@
 
 <div class="container">
     <h1>Panel de Reportes de Gestión 📊</h1>
-    <p>Estos reportes son clave para la toma de decisiones administrativa (adquisición) y operativa (cobro de morosidad).</p>
-
+    
     <div class="reporte-section">
-        <h2>1. Top 10 Materiales Más Prestados (Uso Histórico) 📈</h2>
-        <p>Identifica los materiales con mayor demanda histórica para futuras adquisiciones.</p>
-        <p id="loadingUso" class="loading-message">Cargando reporte de uso...</p>
+        <h2>1. Top 10 Materiales Más Prestados 📈</h2>
+        <p style="color:#666;">Ranking histórico de demanda para decisiones de adquisición.</p>
+        
+        <p id="loadingUso" class="loading-message">⏳ Generando análisis de uso...</p>
 
-        <table id="reporteUsoTable">
-            <thead>
-                <tr>
-                    <th>Título del Material</th>
-                    <th>ISBN</th>
-                    <th>Autor</th>
-                    <th>Total Préstamos</th>
-                </tr>
-            </thead>
-            <tbody id="reporteUsoBody">
-                </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="reporteUsoTable">
+                <thead>
+                    <tr>
+                        <th>Título del Material</th>
+                        <th>ISBN</th>
+                        <th>Autor</th>
+                        <th style="text-align:center;">Total Préstamos</th>
+                    </tr>
+                </thead>
+                <tbody id="reporteUsoBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="reporte-section">
-        <h2>2. Reporte de Usuarios en Mora (Préstamos Vencidos) 🚨</h2>
-        <p>Muestra los préstamos 'Activos' cuya fecha de devolución ya pasó (mora).</p>
-        <p id="loadingMora" class="loading-message">Cargando reporte de mora...</p>
+    <div class="reporte-section" style="border-top: 5px solid var(--mora-high);"> <h2>2. Usuarios en Mora (Deuda Estimada) 🚨</h2>
+        <p style="color:#666;">Listado de préstamos vencidos y cálculo de multas.</p>
         
-        <table id="reporteMoraTable">
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>RUT</th>
-                    <th>Material en Mora</th>
-                    <th>Fecha Límite Esperada</th>
-                    <th>Días en Mora</th>
-                    <th>Multa Estimada ($500/día)</th>
-                </tr>
-            </thead>
-            <tbody id="reporteMoraBody">
-                </tbody>
-        </table>
+        <p id="loadingMora" class="loading-message">⏳ Calculando multas...</p>
+        
+        <div class="table-responsive">
+            <table id="reporteMoraTable">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>RUT</th>
+                        <th>Material Pendiente</th>
+                        <th>Fecha Límite</th>
+                        <th style="text-align:center;">Días Atraso</th>
+                        <th style="text-align:right;">Deuda Estimada</th>
+                    </tr>
+                </thead>
+                <tbody id="reporteMoraBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -138,7 +167,7 @@
         const body = document.getElementById('reporteUsoBody');
         const loading = document.getElementById('loadingUso');
         body.innerHTML = '';
-        loading.textContent = 'Cargando reporte de uso...';
+        loading.style.display = 'block';
 
         try {
             const response = await fetch(API_REPORTE_USO);
@@ -146,9 +175,9 @@
             if (!response.ok) {
                 if (response.status === 403) {
                     loading.className = 'error-message';
-                    loading.textContent = '🚫 Acceso Denegado. Se requiere ser Bibliotecario o Admin.';
+                    loading.textContent = '🚫 Acceso Denegado. Solo personal autorizado.';
                 } else {
-                    throw new Error(`Error HTTP: ${response.status}`);
+                    throw new Error('Fallo HTTP');
                 }
                 return;
             }
@@ -157,7 +186,7 @@
             loading.style.display = 'none';
 
             if (reporte.length === 0) {
-                body.innerHTML = '<tr><td colspan="4">No hay datos suficientes para generar el Top 10.</td></tr>';
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay datos históricos suficientes.</td></tr>';
                 return;
             }
 
@@ -166,13 +195,16 @@
                 row.insertCell(0).textContent = item.titulo_material;
                 row.insertCell(1).textContent = item.isbn;
                 row.insertCell(2).textContent = item.nombre_autor;
-                row.insertCell(3).textContent = item.total_prestamos_historico;
+                
+                const cellTotal = row.insertCell(3);
+                cellTotal.textContent = item.total_prestamos_historico;
+                cellTotal.style.textAlign = 'center';
+                cellTotal.style.fontWeight = 'bold';
             });
 
         } catch (error) {
-            console.error("Error al cargar Reporte de Uso:", error);
             loading.className = 'error-message';
-            loading.textContent = 'Error: No se pudo cargar el reporte de uso.';
+            loading.textContent = 'Error de conexión al cargar reporte.';
         }
     }
 
@@ -180,7 +212,7 @@
         const body = document.getElementById('reporteMoraBody');
         const loading = document.getElementById('loadingMora');
         body.innerHTML = '';
-        loading.textContent = 'Cargando reporte de mora...';
+        loading.style.display = 'block';
 
         try {
             const response = await fetch(API_REPORTE_MORA);
@@ -188,9 +220,9 @@
             if (!response.ok) {
                  if (response.status === 403) {
                     loading.className = 'error-message';
-                    loading.textContent = '🚫 Acceso Denegado. Se requiere ser Bibliotecario o Admin.';
+                    loading.textContent = '🚫 Acceso Denegado.';
                 } else {
-                    throw new Error(`Error HTTP: ${response.status}`);
+                    throw new Error('Fallo HTTP');
                 }
                 return;
             }
@@ -199,29 +231,34 @@
             loading.style.display = 'none';
 
             if (reporte.length === 0) {
-                body.innerHTML = '<tr><td colspan="6">🎉 ¡Felicitaciones! No hay préstamos en mora actualmente.</td></tr>';
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:green; font-weight:bold; padding:20px;">🎉 ¡Excelente! No hay morosidad activa.</td></tr>';
                 return;
             }
 
             reporte.forEach(item => {
                 const row = body.insertRow();
                 
-                if (item.dias_mora > 10) { 
-                    row.classList.add('mora-high'); 
-                }
+                if (item.dias_mora > 10) row.classList.add('mora-high'); 
 
                 row.insertCell(0).textContent = item.nombre_usuario;
                 row.insertCell(1).textContent = item.rut;
                 row.insertCell(2).textContent = item.titulo_material;
                 row.insertCell(3).textContent = item.fecha_esperada;
-                row.insertCell(4).textContent = item.dias_mora;
-                row.insertCell(5).textContent = formatCurrency(item.multa_estimada);
+                
+                const cellDias = row.insertCell(4);
+                cellDias.textContent = item.dias_mora;
+                cellDias.style.textAlign = 'center';
+                cellDias.style.color = 'red';
+                
+                const cellMulta = row.insertCell(5);
+                cellMulta.textContent = formatCurrency(item.multa_estimada);
+                cellMulta.style.textAlign = 'right';
+                cellMulta.style.fontWeight = 'bold';
             });
 
         } catch (error) {
-            console.error("Error al cargar Reporte de Mora:", error);
             loading.className = 'error-message';
-            loading.textContent = 'Error: No se pudo cargar el reporte de mora.';
+            loading.textContent = 'Error de conexión al cargar morosidad.';
         }
     }
 

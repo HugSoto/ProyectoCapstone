@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administración de Usuarios - SIGB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Administración de Usuarios - SIGB</title>
     <style>
         :root {
             --dgac-blue: #004d99;
@@ -14,7 +13,7 @@
         }
         
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 20px;
             background-color: var(--bg-light); 
@@ -37,146 +36,189 @@
         }
         h2 {
             color: #333; 
-            margin-top: 30px;
+            margin-top: 40px;
             border-left: 5px solid var(--dgac-blue);
-            padding-left: 10px;
+            padding-left: 15px;
             font-size: 1.4em;
         }
 
         .form-section { 
-            border: 1px solid #ddd; 
-            padding: 20px; 
+            background-color: #fff;
             margin-bottom: 30px; 
-            border-radius: 5px; 
-            background-color: #ffffff;
         }
-        .form-section label { 
-            display: block; 
-            margin-top: 10px; 
-            font-weight: bold; 
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px;
+            margin-bottom: 20px;
         }
-        .form-section input, .form-section select { 
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label { 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #555;
+        }
+        
+        input, select { 
             width: 100%; 
-            padding: 8px; 
-            margin-top: 5px; 
+            padding: 10px; 
             border: 1px solid #ccc; 
-            border-radius: 4px; 
+            border-radius: 6px; 
             box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 15px; 
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        
+        #submitBtn { background-color: var(--success-color); color: white; }
+        .btn-cancel { background-color: #6c757d; color: white; }
+        button:hover { opacity: 0.9; }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-top: 20px; 
+            min-width: 800px;
         }
+        
         th, td { 
-            padding: 12px; 
-            border: 1px solid #ddd; 
+            padding: 15px; 
+            border-bottom: 1px solid #eee; 
             text-align: left; 
-            font-size: 13px; 
+            font-size: 14px;
         }
         th { 
             background-color: var(--dgac-blue);
             color: white; 
-            font-weight: bold;
+            white-space: nowrap;
         }
+        
         .inactivo { 
-            background-color: #ffe0e0;
-            color: var(--danger-color); 
+            background-color: #fff5f5;
+            color: #999; 
         }
+        .inactivo td { color: #888; }
 
-        button { 
-            padding: 8px 12px; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            margin-right: 5px; 
-            transition: background-color 0.2s;
+        .table-btn {
+            padding: 6px 10px;
             font-size: 13px;
-        }
-        #submitBtn { 
-            background-color: var(--success-color); 
-            color: white; 
-        }
-        .btn-cancel {
-            background-color: var(--dgac-gold);
-            color: var(--dgac-blue);
-        }
-        .btn-edit {
-            background-color: #007bff;
+            margin-right: 5px;
             color: white;
         }
-        .acciones-bloqueadas {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .btn-edit { background-color: #007bff; }
+        .btn-block { background-color: var(--danger-color); }
+        .btn-active { background-color: var(--success-color); }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .btn-container { flex-direction: column; }
+            button { width: 100%; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Gestión de Usuarios (CRUD) 🧑‍💻</h1>
-    <p>Solo visible para el rol 'Admin'. Permite crear, editar y desactivar cuentas de personal.</p>
+    <h1>Gestión de Usuarios 🧑‍💻</h1>
+    <p style="color:#666;">Administración de cuentas y permisos (Acceso restringido).</p>
 
-    <h2>1. Registrar Nuevo Usuario</h2>
+    <h2>1. Registrar / Editar Usuario</h2>
+    
     <div class="form-section">
         <form id="registrarUsuarioForm">
             <input type="hidden" id="editId" value="">
-            <div style="display: flex; gap: 20px;">
-                <div style="flex: 1;">
+            
+            <div class="form-grid">
+                
+                <div class="form-group">
                     <label for="nombre">Nombre Completo:</label>
-                    <input type="text" id="nombre" name="nombre" required>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre Apellido" required>
                 </div>
-                <div style="flex: 1;">
+                
+                <div class="form-group">
                     <label for="rut">RUT:</label>
-                    <input type="text" id="rut" name="rut" required>
+                    <input type="text" id="rut" name="rut" placeholder="12345678-9" required>
                 </div>
-            </div>
-            <div style="display: flex; gap: 20px;">
-                <div style="flex: 1;">
-                    <label for="correo">Correo:</label>
+                
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico:</label>
                     <input type="email" id="correo" name="correo" required>
                 </div>
-                <div style="flex: 1;">
+                
+                <div class="form-group">
                     <label for="telefono">Teléfono:</label>
                     <input type="text" id="telefono" name="telefono" required>
                 </div>
-                <div style="flex: 1;">
-                    <label for="rol">Rol:</label>
+                
+                <div class="form-group">
+                    <label for="rol">Rol de Sistema:</label>
                     <select id="rol" name="rol" required>
                         <option value="Estudiante">Estudiante</option>
                         <option value="Bibliotecario">Bibliotecario</option>
                         <option value="Admin">Admin</option>
                     </select>
                 </div>
+
+                <div class="form-group" id="password-field">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+                </div>
             </div>
-            <div style="flex: 1;" id="password-field">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+
+            <div class="btn-container">
+                <button type="submit" id="submitBtn">💾 Registrar Usuario</button>
+                <button type="button" onclick="resetForm()" class="btn-cancel">❌ Cancelar</button>
             </div>
-            <button type="submit" id="submitBtn">Registrar</button>
-            <button type="button" onclick="resetForm()" class="btn-cancel">Cancelar Edición</button>
         </form>
     </div>
 
-    <h2>2. Inventario de Cuentas del Sistema</h2>
-    <p id="loadingList">Cargando usuarios...</p>
+    <h2>2. Nómina de Usuarios</h2>
+    <p id="loadingList" style="color:#666; font-style:italic;">Cargando lista...</p>
     
-    <table id="usuariosTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>RUT</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="usuariosBody">
-            </tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="usuariosTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>RUT</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="usuariosBody">
+                </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -193,78 +235,62 @@
             if (!response.ok) throw new Error("Fallo al obtener datos.");
             return await response.json();
         } catch (error) {
-            console.error("Error al obtener usuario:", error);
+            console.error("Error:", error);
             return null;
         }
     }
 
-async function listarUsuarios() {
-    const usuariosBody = document.getElementById('usuariosBody');
-    usuariosBody.innerHTML = '';
-    document.getElementById('loadingList').style.display = 'block';
+    async function listarUsuarios() {
+        const usuariosBody = document.getElementById('usuariosBody');
+        usuariosBody.innerHTML = '';
+        document.getElementById('loadingList').style.display = 'block';
 
-    try {
-        const response = await fetch(API_LISTAR);
-        
-        if (!response.ok) {
-            let errorMessage = `Fallo de servidor (${response.status}).`;
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.error || errorMessage;
-            } catch (e) {
-                if (response.status === 403) {
-                    errorMessage = 'Acceso Denegado. Se requiere ser Administrador.';
-                } else if (response.status === 401) {
-                    errorMessage = 'No Autorizado. Inicie sesión.';
-                }
+        try {
+            const response = await fetch(API_LISTAR);
+            
+            if (!response.ok) {
+                let msg = 'Error de acceso o servidor.';
+                if (response.status === 403) msg = '⛔ Acceso Denegado (Solo Admins).';
+                document.getElementById('loadingList').textContent = msg;
+                return;
             }
             
-            document.getElementById('loadingList').textContent = errorMessage;
-            document.getElementById('loadingList').style.display = 'block';
-            usuariosBody.innerHTML = '<tr><td colspan="7">Error al cargar usuarios.</td></tr>';
-            return;
-        }
-        
-        const usuarios = await response.json();
-        document.getElementById('loadingList').style.display = 'none';
+            const usuarios = await response.json();
+            document.getElementById('loadingList').style.display = 'none';
 
             usuarios.forEach(user => {
                 const row = usuariosBody.insertRow();
-                const estado = user.estado_activo ? 'Activo' : 'Inactivo';
+                const activo = user.estado_activo;
                 
-                if (!user.estado_activo) {
-                    row.classList.add('inactivo');
-                }
+                if (!activo) row.classList.add('inactivo');
 
                 row.insertCell(0).textContent = user.id_usuario;
                 row.insertCell(1).textContent = user.nombre;
                 row.insertCell(2).textContent = user.rut;
                 row.insertCell(3).textContent = user.correo;
                 row.insertCell(4).textContent = user.rol;
-                row.insertCell(5).textContent = estado;
+                row.insertCell(5).innerHTML = activo ? '<span style="color:green;font-weight:bold;">Activo</span>' : 'Inactivo';
 
                 const actionsCell = row.insertCell(6);
+                
+                let btnBloqueo = activo 
+                    ? `<button onclick="bloquearUsuario(${user.id_usuario})" class="table-btn btn-block" title="Bloquear">🚫</button>` 
+                    : `<button onclick="reactivarUsuario(${user.id_usuario})" class="table-btn btn-active" title="Reactivar">✅</button>`;
+
                 actionsCell.innerHTML = `
-                    <button onclick="iniciarEdicion(${user.id_usuario})" class="btn-edit">Editar</button>
-                    ${user.estado_activo 
-                        ? `<button onclick="bloquearUsuario(${user.id_usuario})" style="background-color: var(--danger-color);">Bloquear</button>` 
-                        : `<button onclick="reactivarUsuario(${user.id_usuario})" style="background-color: var(--success-color);">Activar</button>` 
-                    }
+                    <button onclick="iniciarEdicion(${user.id_usuario})" class="table-btn btn-edit" title="Editar">✏️</button>
+                    ${btnBloqueo}
                 `;
             });
 
         } catch (error) {
-            console.error("Error al listar usuarios:", error);
-            document.getElementById('loadingList').textContent = 'Error: Fallo crítico de red o JSON inválido.';
+            document.getElementById('loadingList').textContent = 'Error crítico de red.';
         }
     }
 
     async function iniciarEdicion(id) {
         const user = await obtenerUsuarioPorId(id);
-        if (!user) {
-            alert("Error: Usuario no encontrado o fallo en la conexión.");
-            return;
-        }
+        if (!user) return alert("Error al cargar usuario.");
         
         document.getElementById('nombre').value = user.nombre;
         document.getElementById('rut').value = user.rut;
@@ -273,47 +299,30 @@ async function listarUsuarios() {
         document.getElementById('rol').value = user.rol;
         
         document.getElementById('password-field').style.display = 'none';
+        document.getElementById('password').required = false;
 
         document.getElementById('editId').value = id;
-        document.getElementById('submitBtn').textContent = 'Guardar Cambios';
+        document.getElementById('submitBtn').textContent = '🔄 Actualizar Datos';
         
-        alert(`Modo Edición iniciado para: ${user.nombre}`);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function bloquearUsuario(id) {
-        if (!confirm("¿Está seguro de que desea bloquear/desactivar esta cuenta?")) return;
-        
+        if (!confirm("¿Bloquear acceso a este usuario?")) return;
         try {
-            const response = await fetch(`${API_BLOQUEAR}/${id}`, { method: 'PUT', body: JSON.stringify({}) }); 
-            const result = await response.json().catch(() => ({error: "Respuesta del servidor inesperada."}));
-
-            if (response.ok) {
-                alert("Cuenta bloqueada con éxito.");
-                listarUsuarios(); 
-            } else {
-                alert(result.error || "Fallo al bloquear la cuenta.");
-            }
-        } catch (error) {
-            console.error("Error de conexión al bloquear:", error);
-        }
+            const response = await fetch(`${API_BLOQUEAR}/${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'} }); 
+            if (response.ok) listarUsuarios(); 
+            else alert("Error al bloquear (¿Es usted mismo?).");
+        } catch (e) { alert("Error de conexión."); }
     }
 
     async function reactivarUsuario(id) {
-        if (!confirm("¿Confirma que desea reactivar la cuenta?")) return;
-        
+        if (!confirm("¿Reactivar cuenta?")) return;
         try {
             const response = await fetch(`${API_REACTIVAR}/${id}`, { method: 'PUT' });
-            const result = await response.json().catch(() => ({error: "Fallo de servidor."}));
-
-            if (response.ok) {
-                alert("Cuenta reactivada con éxito.");
-                listarUsuarios(); 
-            } else {
-                alert(result.error || "Fallo al reactivar la cuenta.");
-            }
-        } catch (error) {
-            console.error("Error de conexión al reactivar:", error);
-        }
+            if (response.ok) listarUsuarios(); 
+            else alert("Error al reactivar.");
+        } catch (e) { alert("Error de conexión."); }
     }
 
     document.getElementById('registrarUsuarioForm').addEventListener('submit', async function(event) {
@@ -326,13 +335,10 @@ async function listarUsuarios() {
         let method = id ? 'PUT' : 'POST';
 
         if (method === 'POST' && (!data.password || data.password.length < 6)) {
-             alert("Error: La contraseña es obligatoria y debe tener al menos 6 caracteres.");
+             alert("La contraseña debe tener 6 caracteres mínimo.");
              return;
         }
-
-        if (method === 'PUT') {
-             delete data.password;
-        }
+        if (method === 'PUT') delete data.password;
 
         try {
             const response = await fetch(url, {
@@ -340,27 +346,27 @@ async function listarUsuarios() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
             const result = await response.json();
 
             if (response.ok) {
-                alert(result.message || 'Operación exitosa.');
+                alert(result.message || 'Éxito.');
                 resetForm();
-                document.getElementById('password-field').style.display = 'block'; 
                 listarUsuarios();
             } else {
-                alert(result.error || 'Error desconocido en la operación.');
+                alert(result.error || 'Error.');
             }
         } catch (error) {
-            console.error("Error en el envío del formulario:", error);
+            console.error("Error:", error);
         }
     });
 
     function resetForm() {
         document.getElementById('registrarUsuarioForm').reset();
         document.getElementById('editId').value = '';
-        document.getElementById('submitBtn').textContent = 'Registrar';
-        document.getElementById('password-field').style.display = 'block'; 
+        document.getElementById('submitBtn').textContent = '💾 Registrar Usuario';
+        
+        document.getElementById('password-field').style.display = 'flex'; 
+        document.getElementById('password').required = true;
     }
 
     window.onload = listarUsuarios;
